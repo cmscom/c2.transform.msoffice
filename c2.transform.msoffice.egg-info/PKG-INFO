@@ -1,0 +1,26 @@
+Metadata-Version: 1.0
+Name: c2.transform.msoffice
+Version: 0.1dev
+Summary: UNKNOWN
+Home-page: http://www.cmscom.jp
+Author: Manabu Terada
+Author-email: terada@cmscom.jp
+License: GPL
+Description: Introduction
+        ============
+        
+        
+        
+        Changelog
+        =========
+        
+        0.1 (xxxx-xx-xx)
+        ----------------
+        
+        * Initial release
+        
+Keywords: Plone transform MS Officeee search
+Platform: UNKNOWN
+Classifier: Framework :: Plone
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
