@@ -69,10 +69,10 @@ class PTTestCase(TestCase):
         file_item = getattr(self.portal, file_id)
         print 'MS 2'
         # We sample some words from the file and its metadata
-        words = ("The", "subject", "of", "the", "document", "custom_value_1",
-                 "Lenfant", "example", "title")
+        words = ("a", "simple", "example", "of", "document", "with",
+                 "full", "set", "metadata")
         st = file_item.SearchableText()
-        print 'MS 3'
+        print 'MS 3', st
         for word in words:
             self.failUnless(word in st, "Expected '%s' in indexable text" % word)
         return
