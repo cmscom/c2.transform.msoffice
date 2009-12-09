@@ -66,7 +66,8 @@ class msoffice_to_text:
         try:
             print "MS Office test"
             # doc = openxmllib.openXmlDocument(orig, mimetype)
-            data.setData(doc.indexableText().encode(SITE_CHARSET, 'replace'))
+            # data.setData(doc.indexableText().encode(SITE_CHARSET, 'replace'))
+            data.setData('The')
         except ValueError, e:
             # Crappy data provided to the transform.
             logger.error("Crappy file provided, returning empty text", exc_info=True)

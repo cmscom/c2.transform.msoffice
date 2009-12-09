@@ -39,6 +39,7 @@ class PTTestCase(TestCase):
     def afterSetUp(self):
         qi = self.portal.portal_quickinstaller
         qi.installProduct('c2.transform.msoffice')
+        qi.installProduct('collective.indexing')
 
         portal = self.getPortal()
         self.pt = getToolByName(portal, 'portal_transforms')
@@ -62,12 +63,16 @@ class PTTestCase(TestCase):
         test_filename = os.path.join(this_dir, 'wordprocessing1.docx')
         fakefile = fakefile(file(test_filename, 'rb').read())
         fakefile.filename = 'wordprocessing1.docx'
+        print 'MS 0'
         file_id = self.portal.invokeFactory('File', fakefile.filename, file=fakefile)
+        print 'MS 1'
         file_item = getattr(self.portal, file_id)
+        print 'MS 2'
         # We sample some words from the file and its metadata
         words = ("The", "subject", "of", "the", "document", "custom_value_1",
                  "Lenfant", "example", "title")
         st = file_item.SearchableText()
+        print 'MS 3'
         for word in words:
             self.failUnless(word in st, "Expected '%s' in indexable text" % word)
         return
