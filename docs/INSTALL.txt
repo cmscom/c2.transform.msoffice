@@ -1,20 +1,20 @@
 c2.transform.msoffice Installation
-=======================
+=====================================
 
- * When you're reading this you have probably already run
-   ``easy_install c2.transform.msoffice``. Find out how to install setuptools
-   (and EasyInstall) here:
-   http://peak.telecommunity.com/DevCenter/EasyInstall
+* When you're reading this you have probably already run
+  ``easy_install c2.transform.msoffice``. Find out how to install setuptools
+  (and EasyInstall) here:
+  http://peak.telecommunity.com/DevCenter/EasyInstall
 
- * Get `pythonproducts`_ and install it via::
+* Get `pythonproducts`_ and install it via::
 
        python setup.py install --home /path/to/instance
 
-   into your Zope instance.
+  into your Zope instance.
 
- * Create a file called ``c2.transform.msoffice-configure.zcml`` in the
-   ``/path/to/instance/etc/package-includes`` directory.  The file
-   should only contain this::
+* Create a file called ``c2.transform.msoffice-configure.zcml`` in the
+  ``/path/to/instance/etc/package-includes`` directory.  The file
+  should only contain this::
 
        <include package="c2.transform.msoffice" />
 
@@ -23,7 +23,7 @@ c2.transform.msoffice Installation
 Alternatively, if you are using zc.buildout and the plone.recipe.zope2instance
 recipe to manage your project, you can do this:
 
- * Add ``c2.transform.msoffice`` to the list of eggs to install, e.g.:
+* Add ``c2.transform.msoffice`` to the list of eggs to install, e.g.::
 
     [buildout]
     ...
@@ -31,7 +31,7 @@ recipe to manage your project, you can do this:
         ...
         c2.transform.msoffice
 
-  * Tell the plone.recipe.zope2instance recipe to install a ZCML slug:
+* Tell the plone.recipe.zope2instance recipe to install a ZCML slug::
 
     [instance]
     recipe = plone.recipe.zope2instance
@@ -39,7 +39,7 @@ recipe to manage your project, you can do this:
     zcml =
         c2.transform.msoffice
 
-  * Re-run buildout, e.g. with:
+* Re-run buildout, e.g. with::
 
     $ ./bin/buildout
 

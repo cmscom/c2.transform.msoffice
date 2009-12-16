@@ -15,11 +15,11 @@ from Products.PortalTransforms.interfaces import itransform
 from config import SITE_CHARSET, TRANSFORM_NAME
 from c2.transform.msoffice import logger
 
-path = os.path.join(os.path.dirname(__file__))
+scpath = os.path.join(os.path.dirname(__file__), 'msdoc2txt.jar')
 
 def msdoc2txt(data, timeout=60): #default 60 sec
     assert isinstance(data, str)
-    p = subprocess.Popen(("java", '-cp', '/home/terada/poi-3.5-FINAL/ooxml-lib/*:/home/terada/poi-3.5-FINAL/lib/*:/home/terada/poi-3.5-FINAL/*:'+ path, 'msdoc2txt'),
+    p = subprocess.Popen(("java", '-jar', scpath),
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE,
                          stdin=subprocess.PIPE)
@@ -41,32 +41,23 @@ class msoffice_to_text:
     __name__ = TRANSFORM_NAME
 
     inputs = (
+        # MS-Word formats
         'application/msword',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-#         # Wordprocessing formats
-#         ct.CT_WORDPROC_DOCX_PUBLIC,
-#         ct.CT_WORDPROC_DOCM_PUBLIC,
-#         ct.CT_WORDPROC_DOTX_PUBLIC,
-#         ct.CT_WORDPROC_DOTM_PUBLIC,
-# 
-#         # Spreadsheet formats
-#         ct.CT_SPREADSHEET_XLSX_PUBLIC,
-#         ct.CT_SPREADSHEET_XLSM_PUBLIC,
-#         ct.CT_SPREADSHEET_XLTX_PUBLIC,
-#         ct.CT_SPREADSHEET_XLTM_PUBLIC,
-#         # FIXME: note sure we can honour below types...
-# #        '*.xlam': ct.CT_SPREADSHEET_XLAM_PUBLIC,
-# #        '*.xlsb': ct.CT_SPREADSHEET_XLSB_PUBLIC
-# 
-#         # Presentation formats
-#         ct.CT_PRESENTATION_PPTX_PUBLIC,
-#         ct.CT_PRESENTATION_PPTM_PUBLIC,
-#         ct.CT_PRESENTATION_POTX_PUBLIC,
-#         ct.CT_PRESENTATION_POTM_PUBLIC,
-#         ct.CT_PRESENTATION_PPSX_PUBLIC,
-#         ct.CT_PRESENTATION_PPSM_PUBLIC,
-#         # FIXME: Not sure we can honour below types
-# #        '*.ppam': ct.CT_PRESENTATION_PPAM_PUBLIC
+        'application/vnd.ms-word.document.macroEnabled.12',
+        # MS-Excle formats
+        'application/vnd.ms-excel',
+        'application/msexcel',
+        'application/x-msexcel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
+        'application/vnd.ms-excel.sheet.macroEnabled.12',
+        # MS-PowerPoint formats
+        'application/powerpoint',
+        'application/mspowerpoint',
+        'application/x-mspowerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
         )
 
     output = 'text/plain'
