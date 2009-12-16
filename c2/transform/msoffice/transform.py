@@ -73,18 +73,15 @@ class msoffice_to_text:
         return self.__name__
 
     def convert(self, orig, data, **kwargs):
-
         #orig_file = kwargs.get('filename') or 'unknown.xxx'
         mimetype = kwargs.get('mimetype')
         filename = kwargs.get('filename') or 'unknown.xxx'
         if mimetype is None:
             mimetype = mimetypes.guess_type(filename)[0]
-        print "MS Office test"
         try:
             status, text = msdoc2txt(orig)
         except Exception, e:
             logger.error(e, exc_info=True)
-        print 'text output', status, text
         if status:
             data.setData(text)
         else:
