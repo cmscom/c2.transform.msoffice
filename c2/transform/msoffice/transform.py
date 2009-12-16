@@ -19,7 +19,7 @@ scpath = os.path.join(os.path.dirname(__file__), 'msdoc2txt.jar')
 
 def msdoc2txt(data, timeout=60): #default 60 sec
     assert isinstance(data, str)
-    p = subprocess.Popen(("java", '-jar', scpath),
+    p = subprocess.Popen(("java", '-jar', '-Xmx512m', scpath),
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE,
                          stdin=subprocess.PIPE)
@@ -82,6 +82,8 @@ class msoffice_to_text:
             status, text = msdoc2txt(orig)
         except Exception, e:
             logger.error(e, exc_info=True)
+            data.setData('')
+            return data
         if status:
             data.setData(text)
         else:

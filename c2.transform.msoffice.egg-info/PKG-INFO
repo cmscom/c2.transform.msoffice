@@ -1,7 +1,7 @@
 Metadata-Version: 1.0
 Name: c2.transform.msoffice
-Version: 0.1dev-r820
-Summary: UNKNOWN
+Version: 0.1dev
+Summary: This product enables to search MS-Offile files on Plone.
 Home-page: http://www.cmscom.jp
 Author: Manabu Terada
 Author-email: terada@cmscom.jp
@@ -9,15 +9,87 @@ License: GPL
 Description: Introduction
         ============
         
+        Description
+        -------------
         
+        This product enables to search MS-Offile files on Plone.
+        
+        A files
+        --------
+        - MS-Offile files
+        
+        - MS-Word 95-2000, XP, 2007
+        - MS-Excle 95-2000, XP, 2007
+        - MS-PowerPoint 95-2000, XP, 2007
+        
+        Requirement
+        -------------
+        
+        - Plone
+        
+        - Plone 3.0-3.3 (tested by 3.3.2 on CentOS 5.3 64bit)
+        - May be able to use on Plone 4 (but not tested)
+        
+        - Java
+        
+        - JRE 1.6 (tested by 1.6.0)
+        - May be able to use JRE 1.5 (but not tested)
         
         Changelog
         =========
         
-        0.1 (xxxx-xx-xx)
-        ----------------
+        0.1 (2009-12-16)
+        -----------------
         
         * Initial release
+        
+        c2.transform.msoffice Installation
+        =====================================
+        
+        * When you're reading this you have probably already run
+        ``easy_install c2.transform.msoffice``. Find out how to install setuptools
+        (and EasyInstall) here:
+        http://peak.telecommunity.com/DevCenter/EasyInstall
+        
+        * Get `pythonproducts`_ and install it via::
+        
+        python setup.py install --home /path/to/instance
+        
+        into your Zope instance.
+        
+        * Create a file called ``c2.transform.msoffice-configure.zcml`` in the
+        ``/path/to/instance/etc/package-includes`` directory.  The file
+        should only contain this::
+        
+        <include package="c2.transform.msoffice" />
+        
+        .. _pythonproducts: http://plone.org/products/pythonproducts
+        
+        Alternatively, if you are using zc.buildout and the plone.recipe.zope2instance
+        recipe to manage your project, you can do this:
+        
+        * Add ``c2.transform.msoffice`` to the list of eggs to install, e.g.::
+        
+        [buildout]
+        ...
+        eggs =
+        ...
+        c2.transform.msoffice
+        
+        * Tell the plone.recipe.zope2instance recipe to install a ZCML slug::
+        
+        [instance]
+        recipe = plone.recipe.zope2instance
+        ...
+        zcml =
+        c2.transform.msoffice
+        
+        * Re-run buildout, e.g. with::
+        
+        $ ./bin/buildout
+        
+        You can skip the ZCML slug if you are going to explicitly include the package
+        from another package's configure.zcml file.
         
 Keywords: Plone transform MS Officeee search
 Platform: UNKNOWN
