@@ -5,9 +5,10 @@ version = '0.1'
 
 setup(name='c2.transform.msoffice',
       version=version,
-      description="",
+      description="This product enables to search MS-Offile files on Plone.",
       long_description=open("README.txt").read() + "\n" +
-                       open(os.path.join("docs", "HISTORY.txt")).read(),
+                       open(os.path.join("docs", "HISTORY.txt")).read() + "\n" +
+                       open(os.path.join("docs", "INSTALL.txt")).read(),
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Framework :: Plone",
