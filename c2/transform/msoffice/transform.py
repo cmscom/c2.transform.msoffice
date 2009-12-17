@@ -34,11 +34,11 @@ def win_kill(pid):
         ctypes.windll.kernel32.TerminateProcess(h, -1)
         ctypes.windll.kernel32.CloseHandle(h)
     else:
-        subprocess.call(["TASKILL", "/PID", str(pid), "/F"])
+        subprocess.call(["TASKKILL", "/PID", str(pid), "/F"])
 
 def win_timeout(p, timeout):
     s = time.time()
-    while time.time() -s < timeout and p.poll() == None:
+    while time.time() - s < timeout and p.poll() == None:
         time.sleep(0.1)
     if p.poll() == None:
         win_kill(p.pid)
@@ -57,16 +57,16 @@ def msdoc2txt(data, timeout=60): #default 60 sec
         errs = select.select([p.stderr],(),(),0)[0]
     else:
         win_timeout(p, timeout)
-        outs = p.stdout
-        errs = p.stderr
+        outs = [p.stdout]
+        errs = [p.stderr]
     if errs:
         err = errs[0]
-        return False, err.read() # if fail
+        return False, err.read() #if fail
     elif outs:
         out = outs[0]
-        return True, out.read() # if not fail
+        return True, out.read() #if not fail
     else:
-        return None, "timeout" # if timeout
+        return None, "timeout" #if timeout
 
 class msoffice_to_text:
     __implements__ = itransform
