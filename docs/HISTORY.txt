@@ -1,8 +1,19 @@
 Changelog
 =========
 
+0.2 (2009-12-17)
+---------------------
+
+* support Windows
+
+
+0.1.2 (2009-12-17)
+---------------------
+
+* modify typo
+
 0.1.1 (2009-12-16)
------------------
+---------------------
 
 * modify exception code
 * adding java args for big size file

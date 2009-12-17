@@ -4,7 +4,7 @@ Introduction
 Description
 -------------
 
-This product enables to search MS-Offile files on Plone.
+This product enables to search MS-Office files on Plone.
 
 A files
 --------

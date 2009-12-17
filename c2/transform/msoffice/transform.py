@@ -7,15 +7,42 @@ Created by Manabu Terada on 2009-12-02.
 Copyright (c) 2009 CMScom. All rights reserved.
 """
 import os
-import time
-import subprocess, select
+import sys
 from cStringIO import StringIO
 import mimetypes
+import subprocess
+if sys.platform == 'win32':
+    isWIN = True
+    import time
+    try:
+        import ctypes
+    except ImportError:
+        ctypes = None
+else:
+    isWIN = False
+    import select
+
 from Products.PortalTransforms.interfaces import itransform
 from config import SITE_CHARSET, TRANSFORM_NAME
 from c2.transform.msoffice import logger
 
 scpath = os.path.join(os.path.dirname(__file__), 'msdoc2txt.jar')
+
+def win_kill(pid):
+    if ctypes:
+        h = ctypes.windll.kernel32.OpenProcess(1, False, pid)
+        ctypes.windll.kernel32.TerminateProcess(h, -1)
+        ctypes.windll.kernel32.CloseHandle(h)
+    else:
+        subprocess.call(["TASKILL", "/PID", str(pid), "/F"])
+
+def win_timeout(p, timeout):
+    s = time.time()
+    while time.time() -s < timeout and p.poll() == None:
+        time.sleep(0.1)
+    if p.poll() == None:
+        win_kill(p.pid)
+    return
 
 def msdoc2txt(data, timeout=60): #default 60 sec
     assert isinstance(data, str)
@@ -25,16 +52,21 @@ def msdoc2txt(data, timeout=60): #default 60 sec
                          stdin=subprocess.PIPE)
     p.stdin.write(data)
     p.stdin.close()
-    outs = select.select([p.stdout],(),(),timeout)[0]
-    errs = select.select([p.stderr],(),(),0)[0]
+    if not isWIN:
+        outs = select.select([p.stdout],(),(),timeout)[0]
+        errs = select.select([p.stderr],(),(),0)[0]
+    else:
+        win_timeout(p, timeout)
+        outs = p.stdout
+        errs = p.stderr
     if errs:
         err = errs[0]
-        return False, err.read() # 失敗したら(False, エラーメッセージ)
+        return False, err.read() # if fail
     elif outs:
         out = outs[0]
-        return True, out.read() # 成功したら(True, 抽出文字列)
+        return True, out.read() # if not fail
     else:
-        return None, "timeout" # タイムアウトしたら(None, "timeout")
+        return None, "timeout" # if timeout
 
 class msoffice_to_text:
     __implements__ = itransform
