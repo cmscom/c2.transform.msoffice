@@ -4,6 +4,7 @@ Changelog
 0.2 (2009-12-17)
 ---------------------
 
+* support Plone 4.x
 * support Windows
 
 

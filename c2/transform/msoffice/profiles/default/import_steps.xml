@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <import-steps>
   <import-step id="c2-transform-msoffice-mimetypes-registry"
-               version="20091202-01"
-               handler="c2.transform.msoffice.setuphandlers.setupOpenXml"
+               version="20091221-01"
+               handler="c2.transform.msoffice.setuphandlers.setupMSOfficeFile"
                title="C2TransformMsOffice setup">
     C2TransformMsOffice setup for MimeTypesRegistry
   </import-step>

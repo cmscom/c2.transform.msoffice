@@ -10,7 +10,7 @@ from Products.CMFCore.utils import getToolByName
 import config
 from c2.transform.msoffice import logger
 
-def setupOpenXml(context):
+def setupMSOfficeFile(context):
     """Add our transform in PT for MS Office"""
 
     site = context.getSite()
@@ -22,7 +22,7 @@ def setupOpenXml(context):
     return
 
 
-def removeOpenXml(context):
+def removeMSOfficeFile(context):
     """Removing various resources from plone site"""
 
     # At the moment, there's no uninstall support in GenericSetup. So

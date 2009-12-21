@@ -4,14 +4,17 @@ Introduction
 Description
 -------------
 
-This product enables to search MS-Office files on Plone.
+- This product enables to search MS-Office files on Plone.
+- Include Apache POI 3.6 package by jar file.
 
-A files
---------
-- MS-Offile files
+  - http://poi.apache.org/
+
+Support files
+----------------
+- MS-Office files
 
   - MS-Word 95-2000, XP, 2007
-  - MS-Excle 95-2000, XP, 2007
+  - MS-Excel 95-2000, XP, 2007
   - MS-PowerPoint 95-2000, XP, 2007
 
 Requirement

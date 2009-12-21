@@ -1,7 +1,7 @@
 Metadata-Version: 1.0
 Name: c2.transform.msoffice
-Version: 0.1.1dev
-Summary: This product enables to search MS-Offile files on Plone.
+Version: 0.2dev
+Summary: This product enables to search MS-Office files on Plone.
 Home-page: http://www.cmscom.jp
 Author: Manabu Terada
 Author-email: terada@cmscom.jp
@@ -12,14 +12,17 @@ Description: Introduction
         Description
         -------------
         
-        This product enables to search MS-Offile files on Plone.
+        - This product enables to search MS-Office files on Plone.
+        - Include Apache POI 3.6 package by jar file.
         
-        A files
-        --------
-        - MS-Offile files
+        - http://poi.apache.org/
+        
+        Support files
+        ----------------
+        - MS-Office files
         
         - MS-Word 95-2000, XP, 2007
-        - MS-Excle 95-2000, XP, 2007
+        - MS-Excel 95-2000, XP, 2007
         - MS-PowerPoint 95-2000, XP, 2007
         
         Requirement
@@ -38,8 +41,19 @@ Description: Introduction
         Changelog
         =========
         
+        0.2 (2009-12-17)
+        ---------------------
+        
+        * support Windows
+        
+        
+        0.1.2 (2009-12-17)
+        ---------------------
+        
+        * modify typo
+        
         0.1.1 (2009-12-16)
-        -----------------
+        ---------------------
         
         * modify exception code
         * adding java args for big size file
@@ -98,7 +112,7 @@ Description: Introduction
         You can skip the ZCML slug if you are going to explicitly include the package
         from another package's configure.zcml file.
         
-Keywords: Plone transform MS Officeee search
+Keywords: Plone transform MS Office search
 Platform: UNKNOWN
 Classifier: Framework :: Plone
 Classifier: Programming Language :: Python

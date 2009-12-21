@@ -22,7 +22,13 @@ else:
     isWIN = False
     import select
 
-from Products.PortalTransforms.interfaces import itransform
+from zope.interface import implements
+try:
+    from Products.PortalTransforms.interfaces import ITransform
+    HAS_PLONE3 = False
+except ImportError:
+    from Products.PortalTransforms.interfaces import itransform
+    HAS_PLONE3 = True
 from config import SITE_CHARSET, TRANSFORM_NAME
 from c2.transform.msoffice import logger
 
@@ -69,7 +75,10 @@ def msdoc2txt(data, timeout=60): #default 60 sec
         return None, "timeout" #if timeout
 
 class msoffice_to_text:
-    __implements__ = itransform
+    if HAS_PLONE3:
+        __implements__ = itransform
+    else:
+        implements(ITransform)
     __name__ = TRANSFORM_NAME
 
     inputs = (
