@@ -62,6 +62,7 @@ def msdoc2txt(data, timeout=60): #default 60 sec
         outs = select.select([p.stdout],(),(),timeout)[0]
         errs = select.select([p.stderr],(),(),0)[0]
     else:
+        # TODO: can't support windows yet
         win_timeout(p, timeout)
         outs = [p.stdout]
         errs = [p.stderr]
