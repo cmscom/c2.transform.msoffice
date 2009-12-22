@@ -13,9 +13,9 @@ Support files
 ----------------
 - MS-Office files
 
-  - MS-Word 95-2000, XP, 2007
-  - MS-Excel 95-2000, XP, 2007
-  - MS-PowerPoint 95-2000, XP, 2007
+  - MS-Word 95-2000, XP, 2007 and xml-format
+  - MS-Excel 95-2000, XP, 2007 and xml-format
+  - MS-PowerPoint 95-2000, XP, 2007 and xml-format
 
 Requirement
 -------------
@@ -27,3 +27,20 @@ Requirement
 - Java
 
   - JRE 1.6 (tested by 1.6.0)
+
+- OS
+
+  - Linux(like Unix)
+  - Don't support Windows yet (next version task)
+
+Credits
+---------
+
+This code was inspired by Products.OpenXml
+
+
+Contributors
+---------------
+- Manabu Terada(Twitter: @Terapyon) (Main code)
+- Mikio Hokari (Java code & Extend call)
+- Takashi Nagai (Support Windows)

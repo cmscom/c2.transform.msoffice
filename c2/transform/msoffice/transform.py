@@ -4,11 +4,11 @@
 transform.py
 
 Created by Manabu Terada on 2009-12-02.
+contributors: Manabu Terada, Mikio Hokari(Java code), Takashi Nagai(support Windows)
 Copyright (c) 2009 CMScom. All rights reserved.
 """
 import os
 import sys
-from cStringIO import StringIO
 import mimetypes
 import subprocess
 if sys.platform == 'win32':
@@ -48,7 +48,8 @@ def win_timeout(p, timeout):
         time.sleep(0.1)
     if p.poll() == None:
         win_kill(p.pid)
-    return
+        return False
+    return True
 
 def msdoc2txt(data, timeout=60): #default 60 sec
     assert isinstance(data, str)
@@ -61,19 +62,23 @@ def msdoc2txt(data, timeout=60): #default 60 sec
     if not isWIN:
         outs = select.select([p.stdout],(),(),timeout)[0]
         errs = select.select([p.stderr],(),(),0)[0]
+        if errs:
+            err = errs[0]
+            return False, err.read() #if fail
+        elif outs:
+            out = outs[0]
+            return True, out.read() #if not fail
+        else:
+            return None, "timeout" #if timeout
     else:
-        # TODO: can't support windows yet
-        win_timeout(p, timeout)
-        outs = [p.stdout]
-        errs = [p.stderr]
-    if errs:
-        err = errs[0]
-        return False, err.read() #if fail
-    elif outs:
-        out = outs[0]
-        return True, out.read() #if not fail
-    else:
-        return None, "timeout" #if timeout
+        if r:
+            if p.poll():
+                return False, p.stderr.read() #if fail
+            else:
+                return True, p.stdout.read() #if not fail
+        else:
+            return None, "timeout" #if timeout
+
 
 class msoffice_to_text:
     if HAS_PLONE3:
