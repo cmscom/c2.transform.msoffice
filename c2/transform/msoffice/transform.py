@@ -71,6 +71,7 @@ def msdoc2txt(data, timeout=60): #default 60 sec
         else:
             return None, "timeout" #if timeout
     else:
+        r = win_timeout(p, timeout)
         if r:
             if p.poll():
                 return False, p.stderr.read() #if fail

@@ -13,8 +13,10 @@ from Products.Five import zcml
 from Products.Five import fiveconfigure
 from Products.PloneTestCase import PloneTestCase as ptc
 from Products.PloneTestCase.layer import PloneSite
+from Products.MimetypesRegistry.interfaces import IMimetype
 
 from c2.transform.msoffice.config import TRANSFORM_NAME
+from c2.transform.msoffice.config import office_mimetypes
 
 ptc.setupPloneSite()
 
@@ -74,10 +76,47 @@ class PTTestCase(TestCase):
         return
 
 
+class MTRTestCase(TestCase):
+
+    def afterSetUp(self):
+        portal = self.getPortal()
+        self.mtr = getToolByName(portal, 'mimetypes_registry')
+
+
+    def testInstallation(self):
+        """Checking installation of our Mime types"""
+
+        mtr = self.mtr
+        for mt_dict in office_mimetypes:
+            mt_string = mt_dict['mimetypes'][0]
+            mimetype = mtr.lookup(mt_string)
+            self.failUnless(
+                len(mimetype) > 0,
+                "Didn't find MimeType obj for %s" % mt_string)
+            if len(mimetype) > 0:
+                self.failUnless(
+                    IMimetype.isImplementedBy(mtr.lookup(mt_string)[0]),
+                    "Didn't find MimeType obj for %s" % mt_string)
+        return
+
+
+    def testExtensions(self):
+        """Finding mimetypes by extension"""
+
+        mtr = self.mtr
+        for mt_dict in office_mimetypes:
+            ext = mt_dict['extensions'][0]
+            expected = mt_dict['mimetypes'][0]
+            got = mtr.lookupExtension(ext).normalized()
+            self.failUnlessEqual(expected, got)
+        return
+
+
 
 def test_suite():
     return unittest.TestSuite([
         unittest.makeSuite(PTTestCase),
+        unittest.makeSuite(MTRTestCase),
 
         # Unit tests
         #doctestunit.DocFileSuite(

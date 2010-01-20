@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: c2.transform.msoffice
-Version: 0.2dev
+Version: 0.3.1dev
 Summary: This product enables to search MS-Office files on Plone.
 Home-page: http://www.cmscom.jp
 Author: Manabu Terada
@@ -21,31 +21,55 @@ Description: Introduction
         ----------------
         - MS-Office files
         
-        - MS-Word 95-2000, XP, 2007
-        - MS-Excel 95-2000, XP, 2007
-        - MS-PowerPoint 95-2000, XP, 2007
+        - MS-Word 95-2000, XP, 2007 and xml-format
+        - MS-Excel 95-2000, XP, 2007 and xml-format
+        - MS-PowerPoint 95-2000, XP, 2007 and xml-format
         
         Requirement
         -------------
         
         - Plone
         
-        - Plone 3.0-3.3 (tested by 3.3.2 on CentOS 5.3 64bit)
-        - May be able to use on Plone 4 (but not tested)
+        - Plone 3.0-3.3 and Plone 4.0 (tested by 3.3.2 and 4.0a2 on CentOS 5.3 64bit)
         
         - Java
         
         - JRE 1.6 (tested by 1.6.0)
-        - May be able to use JRE 1.5 (but not tested)
+        
+        - OS
+        
+        - Linux(like Unix)
+        - Windows
+        
+        Credits
+        ---------
+        
+        This code was inspired by Products.OpenXml
+        
+        
+        Contributors
+        ---------------
+        - Manabu Terada(Twitter: @Terapyon) (Main code)
+        - Mikio Hokari (Java code & Extend call)
+        - Takashi Nagai (Support Windows)
         
         Changelog
         =========
         
-        0.2 (2009-12-17)
+        0.3.1 (2009-12-22)
         ---------------------
         
-        * support Windows
+        * bug fix for Windows
         
+        0.3 (2009-12-22)
+        ---------------------
+        
+        * support Windows OS
+        
+        0.2 (2009-12-21)
+        ---------------------
+        
+        * support Plone 4.x
         
         0.1.2 (2009-12-17)
         ---------------------

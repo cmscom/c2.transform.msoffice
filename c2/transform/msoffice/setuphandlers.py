@@ -14,6 +14,25 @@ def setupMSOfficeFile(context):
     """Add our transform in PT for MS Office"""
 
     site = context.getSite()
+    
+    # Adding our file types to MTR
+    mtr = getToolByName(site, 'mimetypes_registry')
+    for mt_dict in config.office_mimetypes:
+        main_mt = mt_dict['mimetypes'][0]
+        mt_name = mt_dict['name']
+        if bool(mtr.lookup(main_mt)):
+            # Already installed
+            logger.info("%s (%s) Mime type already installed, skipped", main_mt, mt_name)
+            continue
+        mtr.manage_addMimeType(
+            mt_name,
+            mt_dict['mimetypes'],
+            mt_dict['extensions'],
+            mt_dict['icon_path'],
+            binary=True,
+            globs=mt_dict['globs'])
+        logger.info("%s (%s) Mime type installed", main_mt, mt_name)
+
     # Registering our transform in PT
     transforms_tool = getToolByName(site, 'portal_transforms')
     if config.TRANSFORM_NAME not in transforms_tool.objectIds():
