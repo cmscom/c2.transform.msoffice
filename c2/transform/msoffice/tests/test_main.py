@@ -85,7 +85,7 @@ class MTRTestCase(TestCase):
 
     def testInstallation(self):
         """Checking installation of our Mime types"""
-        providedBy = getattr(IMimetype, 'providedBy', 'isImplementedBy')
+        providedBy = getattr(IMimetype, 'providedBy', IMimetype.isImplementedBy)
         mtr = self.mtr
         for mt_dict in office_mimetypes:
             mt_string = mt_dict['mimetypes'][0]
