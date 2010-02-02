@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.0b1 (2010-02-01)
+---------------------
+
+* modify getting from metadata and note in the msoffice file
+* no support for Windows
+
+
 0.3.2 (2010-01-19)
 ---------------------
 

@@ -31,7 +31,7 @@ Requirement
 - OS
 
   - Linux(like Unix)
-  - Windows
+  - no support for Windows
 
 Credits
 ---------

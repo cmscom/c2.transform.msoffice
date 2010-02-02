@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: c2.transform.msoffice
-Version: 0.3.1dev
+Version: 0.3.2dev
 Summary: This product enables to search MS-Office files on Plone.
 Home-page: http://www.cmscom.jp
 Author: Manabu Terada
@@ -55,6 +55,11 @@ Description: Introduction
         
         Changelog
         =========
+        
+        0.3.2 (2010-01-19)
+        ---------------------
+        
+        * setting some mimetypes
         
         0.3.1 (2009-12-22)
         ---------------------

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.3.2'
+version = '1.0b1'
 
 setup(name='c2.transform.msoffice',
       version=version,
