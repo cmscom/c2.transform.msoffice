@@ -85,7 +85,7 @@ class MTRTestCase(TestCase):
 
     def testInstallation(self):
         """Checking installation of our Mime types"""
-
+        providedBy = getattr(IMimetype, 'providedBy', 'isImplementedBy')
         mtr = self.mtr
         for mt_dict in office_mimetypes:
             mt_string = mt_dict['mimetypes'][0]
@@ -95,7 +95,7 @@ class MTRTestCase(TestCase):
                 "Didn't find MimeType obj for %s" % mt_string)
             if len(mimetype) > 0:
                 self.failUnless(
-                    IMimetype.isImplementedBy(mtr.lookup(mt_string)[0]),
+                    providedBy(mtr.lookup(mt_string)[0]),
                     "Didn't find MimeType obj for %s" % mt_string)
         return
 
