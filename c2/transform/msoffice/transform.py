@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-"""
-transform.py
-
-Created by Manabu Terada on 2009-12-02.
-contributors: Manabu Terada, Mikio Hokari(Java code), Takashi Nagai(support Windows)
-Copyright (c) 2009 CMScom. All rights reserved.
-"""
 import os
 import sys
 import mimetypes

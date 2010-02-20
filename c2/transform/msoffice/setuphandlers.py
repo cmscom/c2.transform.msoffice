@@ -1,11 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-"""
-setuphandlers.py
-
-Created by Manabu Terada on 2009-12-02.
-Copyright (c) 2009 CMScom. All rights reserved.
-"""
 from Products.CMFCore.utils import getToolByName
 import config
 from c2.transform.msoffice import logger

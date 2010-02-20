@@ -18,7 +18,6 @@ c2/transform/msoffice/msdoc2txt.jar
 c2/transform/msoffice/setuphandlers.py
 c2/transform/msoffice/transform.py
 c2/transform/msoffice/version.txt
-c2/transform/msoffice/javasrc/msdoc2txt.class
 c2/transform/msoffice/javasrc/msdoc2txt.java
 c2/transform/msoffice/profiles/default/import_steps.xml
 c2/transform/msoffice/profiles/default/metadata.xml
