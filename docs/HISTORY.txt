@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.0b3 (2010-10-06)
+---------------------
+
+* adding terminated suspicious zombie process
+
 1.0b2 (2010-02-19)
 ---------------------
 

@@ -2,6 +2,7 @@
 # encoding: utf-8
 import os
 import sys
+import signal
 import mimetypes
 import subprocess
 if sys.platform == 'win32':
@@ -55,6 +56,7 @@ def msdoc2txt(data, timeout=60): #default 60 sec
     if not isWIN:
         outs = select.select([p.stdout],(),(),timeout)[0]
         errs = select.select([p.stderr],(),(),0)[0]
+        os.kill(p.pid, signal.SIGTERM)
         if errs:
             err = errs[0]
             return False, err.read() #if fail
