@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: c2.transform.msoffice
-Version: 1.0b1
+Version: 1.0b3
 Summary: This product enables to search MS-Office files on Plone.
 Home-page: http://www.cmscom.jp
 Author: Manabu Terada
@@ -15,31 +15,31 @@ Description: Introduction
         - This product enables to search MS-Office files on Plone.
         - Include Apache POI 3.6 package by jar file.
         
-        - http://poi.apache.org/
+          - http://poi.apache.org/
         
         Support files
         ----------------
         - MS-Office files
         
-        - MS-Word 95-2000, XP, 2007 and xml-format
-        - MS-Excel 95-2000, XP, 2007 and xml-format
-        - MS-PowerPoint 95-2000, XP, 2007 and xml-format
+          - MS-Word 95-2000, XP, 2007 and xml-format
+          - MS-Excel 95-2000, XP, 2007 and xml-format
+          - MS-PowerPoint 95-2000, XP, 2007 and xml-format
         
         Requirement
         -------------
         
         - Plone
         
-        - Plone 3.0-3.3 and Plone 4.0 (tested by 3.3.2 and 4.0a2 on CentOS 5.3 64bit)
+          - Plone 3.0-3.3 and Plone 4.0 (tested by 3.3.2 and 4.0a2 on CentOS 5.3 64bit)
         
         - Java
         
-        - JRE 1.6 (tested by 1.6.0)
+          - JRE 1.6 (tested by 1.6.0)
         
         - OS
         
-        - Linux(like Unix)
-        - no support for Windows
+          - Linux(like Unix)
+          - no support for Windows
         
         Credits
         ---------
@@ -55,6 +55,16 @@ Description: Introduction
         
         Changelog
         =========
+        
+        1.0b3 (2010-10-06)
+        ---------------------
+        
+        * adding terminated suspicious zombie process
+        
+        1.0b2 (2010-02-19)
+        ---------------------
+        
+        * remove the copyright in the files
         
         1.0b1 (2010-02-01)
         ---------------------
@@ -104,21 +114,21 @@ Description: Introduction
         =====================================
         
         * When you're reading this you have probably already run
-        ``easy_install c2.transform.msoffice``. Find out how to install setuptools
-        (and EasyInstall) here:
-        http://peak.telecommunity.com/DevCenter/EasyInstall
+          ``easy_install c2.transform.msoffice``. Find out how to install setuptools
+          (and EasyInstall) here:
+          http://peak.telecommunity.com/DevCenter/EasyInstall
         
         * Get `pythonproducts`_ and install it via::
         
-        python setup.py install --home /path/to/instance
+               python setup.py install --home /path/to/instance
         
-        into your Zope instance.
+          into your Zope instance.
         
         * Create a file called ``c2.transform.msoffice-configure.zcml`` in the
-        ``/path/to/instance/etc/package-includes`` directory.  The file
-        should only contain this::
+          ``/path/to/instance/etc/package-includes`` directory.  The file
+          should only contain this::
         
-        <include package="c2.transform.msoffice" />
+               <include package="c2.transform.msoffice" />
         
         .. _pythonproducts: http://plone.org/products/pythonproducts
         
@@ -127,23 +137,23 @@ Description: Introduction
         
         * Add ``c2.transform.msoffice`` to the list of eggs to install, e.g.::
         
-        [buildout]
-        ...
-        eggs =
-        ...
-        c2.transform.msoffice
+            [buildout]
+            ...
+            eggs =
+                ...
+                c2.transform.msoffice
         
         * Tell the plone.recipe.zope2instance recipe to install a ZCML slug::
         
-        [instance]
-        recipe = plone.recipe.zope2instance
-        ...
-        zcml =
-        c2.transform.msoffice
+            [instance]
+            recipe = plone.recipe.zope2instance
+            ...
+            zcml =
+                c2.transform.msoffice
         
         * Re-run buildout, e.g. with::
         
-        $ ./bin/buildout
+            $ ./bin/buildout
         
         You can skip the ZCML slug if you are going to explicitly include the package
         from another package's configure.zcml file.

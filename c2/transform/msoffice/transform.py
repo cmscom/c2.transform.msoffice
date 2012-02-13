@@ -15,6 +15,8 @@ if sys.platform == 'win32':
 else:
     isWIN = False
     import select
+    import time
+    import threading
 
 from zope.interface import implements
 try:
@@ -51,20 +53,35 @@ def msdoc2txt(data, timeout=60): #default 60 sec
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE,
                          stdin=subprocess.PIPE)
-    p.stdin.write(data)
-    p.stdin.close()
     if not isWIN:
-        outs = select.select([p.stdout],(),(),timeout)[0]
-        errs = select.select([p.stderr],(),(),0)[0]
-        os.kill(p.pid, signal.SIGTERM)
-        if errs:
-            err = errs[0]
-            return False, err.read() #if fail
-        elif outs:
-            out = outs[0]
-            return True, out.read() #if not fail
+        # Based on the code from http://betabug.ch/blogs/ch-athens/1093
+        kill_check = threading.Event()
+        def _kill_process_after_a_timeout(pid):
+            os.kill(pid, signal.SIGTERM)
+            kill_check.set() # tell the main routine that we had to kill
+            # use SIGKILL if hard to kill...
+            return
+
+        pid = p.pid
+        watchdog = threading.Timer(timeout, _kill_process_after_a_timeout, args=(pid, ))
+        watchdog.start()
+        (out,err) = p.communicate(input=data)
+        watchdog.cancel() # if it's still waiting to run
+        success = not kill_check.isSet()
+        kill_check.clear()
+
+        if success:
+            if err:
+                status = False
+                val = err
+            elif out:
+                status = True
+                val = out
         else:
-            return None, "timeout" #if timeout
+            status = None
+            val = "timeout" #if timeout
+
+        return status, val
     else:
         r = win_timeout(p, timeout)
         if r:
@@ -119,6 +136,7 @@ class msoffice_to_text:
         #orig_file = kwargs.get('filename') or 'unknown.xxx'
         mimetype = kwargs.get('mimetype')
         filename = kwargs.get('filename') or 'unknown.xxx'
+
         if mimetype is None:
             mimetype = mimetypes.guess_type(filename)[0]
         try:

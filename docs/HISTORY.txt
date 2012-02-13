@@ -1,32 +1,37 @@
 Changelog
 =========
 
+1.0b4 (2012-02-xx)
+---------------------
+
+* modify kill process for Popen
+
 1.0b3 (2010-10-06)
 ---------------------
 
-* adding terminated suspicious zombie process
+* adding terminated suspicious zombie process [terapyon]
 
 1.0b2 (2010-02-19)
 ---------------------
 
-* remove the copyright in the files
+* remove the copyright in the files [terapyon]
 
 1.0b1 (2010-02-01)
 ---------------------
 
-* modify getting from metadata and note in the msoffice file
-* no support for Windows
+* modify getting from metadata and note in the msoffice file [terapyon]
+* no support for Windows [terapyon]
 
 
 0.3.2 (2010-01-19)
 ---------------------
 
-* setting some mimetypes
+* setting some mimetypes [terapyon]
 
 0.3.1 (2009-12-22)
 ---------------------
 
-* bug fix for Windows
+* bug fix for Windows [terapyon]
 
 0.3 (2009-12-22)
 ---------------------
@@ -36,7 +41,7 @@ Changelog
 0.2 (2009-12-21)
 ---------------------
 
-* support Plone 4.x
+* support Plone 4.x [terapyon]
 
 0.1.2 (2009-12-17)
 ---------------------
