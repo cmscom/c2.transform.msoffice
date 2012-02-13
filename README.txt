@@ -9,6 +9,10 @@ Description
 
   - http://poi.apache.org/
 
+- Code repository
+
+  - https://bitbucket.org/cmscom/c2.transform.msoffice
+
 Support files
 ----------------
 - MS-Office files
