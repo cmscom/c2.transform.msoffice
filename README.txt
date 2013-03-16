@@ -48,3 +48,4 @@ Contributors
 - Manabu Terada(Twitter: @Terapyon) (Main code)
 - Mikio Hokari (Java code & Extend call)
 - Takashi Nagai (Support Windows)
+- Takayuki Nagai (Bug fix for 1.0b4 tnagai@cc.kumamoto-u.ac.jp)
