@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.0b4'
+version = '1.0b5'
 
 setup(name='c2.transform.msoffice',
       version=version,
@@ -30,5 +30,7 @@ setup(name='c2.transform.msoffice',
       ],
       entry_points="""
       # -*- Entry points: -*-
+      [z3c.autoinclude.plugin]
+      target = plone
       """,
       )
