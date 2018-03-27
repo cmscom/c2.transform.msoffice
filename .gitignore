@@ -1,0 +1,5 @@
+target/
+*settings.xml
+/bin/
+.classpath
+.project
