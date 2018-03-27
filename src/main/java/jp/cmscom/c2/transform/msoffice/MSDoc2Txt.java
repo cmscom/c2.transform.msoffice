@@ -1,51 +1,38 @@
 package jp.cmscom.c2.transform.msoffice;
 
-import java.io.*;
-import org.apache.poi.openxml4j.opc.PackageProperties;
-import org.apache.poi.extractor.ExtractorFactory;
-import org.apache.poi.POITextExtractor;
-import org.apache.xmlbeans.XmlException;
-import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.POIOLE2TextExtractor;
-import org.apache.poi.POIXMLTextExtractor;
-import org.apache.poi.POITextExtractor;
-
-import org.apache.poi.hdgf.extractor.VisioTextExtractor;
-import org.apache.poi.hwpf.extractor.WordExtractor;
-import org.apache.poi.hssf.extractor.ExcelExtractor;
-import org.apache.poi.hslf.extractor.PowerPointExtractor;
-import org.apache.poi.xslf.extractor.XSLFPowerPointExtractor;
-import org.apache.poi.hwpf.*;
-import org.apache.poi.hwpf.extractor.*;
-import org.apache.poi.poifs.filesystem.*;
-import org.apache.poi.hwpf.*;
-import org.apache.poi.hwpf.extractor.*;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.util.Iterator;
-import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.POIXMLDocument;
 
-import org.apache.poi.xslf.XSLFSlideShow;
-import org.apache.poi.xslf.extractor.XSLFPowerPointExtractor;
-import org.apache.poi.xssf.extractor.XSSFExcelExtractor;
-import org.apache.poi.xssf.usermodel.XSSFRelation;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFRelation;
-import org.apache.poi.openxml4j.opc.PackagePart;
-import org.apache.poi.openxml4j.opc.PackageRelationshipCollection;
 import org.apache.poi.POIDocument;
-import org.apache.poi.hwpf.HWPFDocument;
-import org.apache.poi.hslf.HSLFSlideShow;
-import org.apache.poi.hdgf.HDGFDiagram;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hpsf.SummaryInformation;
-import org.apache.poi.xslf.XSLFSlideShow;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.POITextExtractor;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.POIXMLProperties;
 import org.apache.poi.POIXMLProperties.CoreProperties;
+import org.apache.poi.extractor.ExtractorFactory;
+import org.apache.poi.hdgf.HDGFDiagram;
+import org.apache.poi.hpsf.SummaryInformation;
+import org.apache.poi.hslf.HSLFSlideShow;
+import org.apache.poi.hslf.extractor.PowerPointExtractor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.openxml4j.opc.PackagePart;
+import org.apache.poi.openxml4j.opc.PackageRelationshipCollection;
+import org.apache.poi.poifs.filesystem.DirectoryNode;
+import org.apache.poi.poifs.filesystem.Entry;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.xslf.XSLFSlideShow;
+import org.apache.poi.xslf.extractor.XSLFPowerPointExtractor;
+import org.apache.poi.xssf.usermodel.XSSFRelation;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFRelation;
+import org.apache.xmlbeans.XmlException;
 
 public class MSDoc2Txt {
 
@@ -112,9 +99,8 @@ public class MSDoc2Txt {
 
 	public static POIDocument getDocument(POIFSFileSystem fs) throws IOException {
 		DirectoryNode dir = fs.getRoot();
-		for (Iterator entries = dir.getEntries(); entries.hasNext();) {
+		for (Iterator<?> entries = dir.getEntries(); entries.hasNext();) {
 			Entry entry = (Entry) entries.next();
-
 			if (entry.getName().equals("Workbook")) {
 				return new HSSFWorkbook(dir, fs, true);
 			}
