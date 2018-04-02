@@ -13,6 +13,11 @@ Description
 
   - https://bitbucket.org/cmscom/c2.transform.msoffice
 
+- Java code
+
+  - https://bitbucket.org/cmscom/msdoc2txt
+
+
 Support files
 ----------------
 - MS-Office files
