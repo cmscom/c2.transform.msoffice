@@ -49,8 +49,12 @@ CSV files (`soffice --headless --convert-to docx document.txt`, the CSV
 with `--infilter="CSV:44,34,76,1"`, and the presentation by converting a PDF
 of the text with `--infilter=impress_pdf_import`); `<cp:revision>` was then
 removed from `docProps/core.xml` of the OOXML files, because the jar prints
-it as text. The `.ppt` file was written with the Apache POI classes in the
-bundled jar (`HSLFSlideShow` with one text box), because it is much smaller
-than the one LibreOffice writes. The jar cannot read either of them (see the
-known issues in `README.md`). `empty.docx` is a converted empty
-text file.
+it as text. `empty.docx` is a converted empty text file.
+
+The `.ppt` file was written with the Apache POI classes in the bundled jar
+(`HSLFSlideShow` with one text box), because it is much smaller than the one
+LibreOffice writes; the jar cannot read either of them (see the known issues
+in `README.md`). POI's empty template names a person as the last editor in
+the Current User stream, so the name was cleared with
+`getSlideShowImpl().getCurrentUserAtom().setLastEditUsername("")`. Check new
+samples for names in their metadata before adding them.

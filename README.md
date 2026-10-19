@@ -17,11 +17,28 @@ Text is extracted by a bundled Java program (`msdoc2txt.jar`, built on
 - Java 8 or later on `PATH` (CI uses Temurin 21)
 - Linux and other POSIX systems. Windows is not supported.
 
-## Supported files
+## Accepted MIME types
 
-- Word: `.doc`, `.docx`, `.docm`
-- Excel: `.xls`, `.xlsx`, `.xlsm`, `.xlsb`
-- PowerPoint: `.pptx`, `.pptm` (see the known issues for `.ppt`)
+The transform is registered for these MIME types:
+
+- Word: `application/msword`,
+  `application/vnd.openxmlformats-officedocument.wordprocessingml.document`,
+  `application/vnd.ms-word.document.macroEnabled.12`
+- Excel: `application/vnd.ms-excel`, `application/msexcel`,
+  `application/x-msexcel`,
+  `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`,
+  `application/vnd.ms-excel.sheet.binary.macroEnabled.12`,
+  `application/vnd.ms-excel.sheet.macroEnabled.12`
+- PowerPoint: `application/vnd.ms-powerpoint`, `application/powerpoint`,
+  `application/mspowerpoint`, `application/x-mspowerpoint`,
+  `application/vnd.openxmlformats-officedocument.presentationml.presentation`,
+  `application/vnd.ms-powerpoint.presentation.macroEnabled.12`
+
+### Tested formats
+
+The tests extract text from `.docx`, `.doc`, `.xlsx`, `.xls` and `.pptx`
+files. `.ppt` files give no text (see the known issues). The other formats
+are passed to the jar but are not covered by the tests.
 
 ## Installation
 
