@@ -22,8 +22,6 @@ DEFAULT_JAVA_OPTS = ("-Xmx512m",)
 # file.encoding and JDK 19+ from stdout.encoding, so both are always set.
 # They come after the options from the environment so they always win.
 ENCODING_OPTS = ("-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8")
-# How much of the jar's stderr (a Java stack trace) goes into the log.
-STDERR_LOG_LIMIT = 500
 
 
 def timeout() -> int:
@@ -52,7 +50,8 @@ def msdoc2txt(data: bytes) -> str | None:
 
     The document goes to the jar on stdin and the text comes back on stdout.
     The exit code decides success: an empty stdout with exit code 0 is a
-    document without text. Neither the document nor the text is logged.
+    document without text. Neither the document, the text nor the jar's
+    stderr is logged: a Java exception can quote parts of the document.
     """
     seconds = timeout()
     try:
@@ -76,12 +75,7 @@ def msdoc2txt(data: bytes) -> str | None:
         logger.exception("msdoc2txt could not run")
         return None
     if result.returncode != 0:
-        stderr = result.stderr.decode("utf-8", errors="replace")
-        logger.error(
-            "msdoc2txt failed with exit code %d: %s",
-            result.returncode,
-            stderr[:STDERR_LOG_LIMIT],
-        )
+        logger.error("msdoc2txt failed with exit code %d", result.returncode)
         return None
     if not result.stdout:
         logger.debug("msdoc2txt returned no text")

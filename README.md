@@ -84,7 +84,9 @@ java -Xmx512m -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -jar msdoc2txt.jar <
 - The exit code decides success. A document without text gives empty text.
 - If `java` cannot be run, exits with an error or takes too long, the text is
   empty and an error is logged. Saving the file is not affected.
-- Neither the document nor its text is written to the log.
+- Neither the document, its text nor the error output of `java` is written
+  to the log, because a Java exception can quote parts of the document. A
+  failed run logs only its exit code.
 
 ## Configuration
 

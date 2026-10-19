@@ -120,17 +120,21 @@ def test_stdout_that_is_not_utf8_does_not_raise(monkeypatch):
 
 
 def test_non_zero_exit_code(monkeypatch, caplog):
-    stderr = b"java.lang.IllegalArgumentException: UNKNOWN is not supported" + (
-        b"x" * 2000
-    )
+    stderr = b"java.lang.IllegalArgumentException: UNKNOWN is not supported"
     fake_run(monkeypatch, returncode=1, stdout=b"partial", stderr=stderr)
     assert convert(DOCUMENT) == ""
-    assert [r.levelname for r in caplog.records] == ["ERROR"]
-    message = caplog.records[0].getMessage()
-    assert message == (
-        "msdoc2txt failed with exit code 1: "
-        "java.lang.IllegalArgumentException: UNKNOWN is not supported" + "x" * 440
-    )
+    assert [(r.levelname, r.getMessage()) for r in caplog.records] == [
+        ("ERROR", "msdoc2txt failed with exit code 1")
+    ]
+
+
+def test_stderr_is_not_logged(monkeypatch, caplog):
+    """A Java exception can quote the document, for example a part name."""
+    stderr = b"org.apache.poi.POIXMLException: /word/secret-part-name.xml"
+    fake_run(monkeypatch, returncode=1, stderr=stderr)
+    with caplog.at_level(logging.DEBUG, logger="c2.transform.msoffice"):
+        assert convert(DOCUMENT) == ""
+    assert "secret-part-name" not in caplog.text
     assert "secret document body" not in caplog.text
 
 

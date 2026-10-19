@@ -122,11 +122,9 @@ class TestRealJava:
         with caplog.at_level(logging.ERROR, logger="c2.transform.msoffice"):
             text = SearchableText_file(obj)()
         assert "Presentation slide example" not in text
-        [record] = caplog.records
-        assert record.getMessage().startswith(
-            'msdoc2txt failed with exit code 1: Exception in thread "main" '
-            "java.lang.IllegalArgumentException: Error creating Scratchpad Extractor"
-        )
+        assert [r.getMessage() for r in caplog.records] == [
+            "msdoc2txt failed with exit code 1"
+        ]
 
     @pytest.mark.xfail(
         strict=True,

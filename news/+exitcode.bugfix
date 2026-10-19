@@ -1,1 +1,1 @@
-Decide success by the exit code of `java`. Text is no longer thrown away when the jar writes a warning to stderr, and a document without text no longer logs an error. [terapyon]
+Decide success by the exit code of `java`. Text is no longer thrown away when the jar writes a warning to stderr, and a document without text no longer logs an error. A failed run logs its exit code but not the error output of `java`, which can quote parts of the document. [terapyon]
