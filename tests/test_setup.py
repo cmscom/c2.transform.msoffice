@@ -63,7 +63,7 @@ def test_install_twice(transforms, setup_tool, caplog):
     ) in caplog.record_tuples
 
 
-def test_uninstall_profile_is_hidden():
+def test_uninstall_profile_is_hidden(portal):
     hidden = getUtility(INonInstallable, name=PACKAGE_NAME)
     assert hidden.getNonInstallableProfiles() == ["c2.transform.msoffice:uninstall"]
 
