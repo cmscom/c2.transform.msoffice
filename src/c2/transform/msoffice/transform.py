@@ -29,8 +29,13 @@ def timeout() -> int:
     value = os.environ.get(TIMEOUT_ENV, "").strip()
     if not value:
         return DEFAULT_TIMEOUT
-    if value.isdigit() and int(value) > 0:
-        return int(value)
+    try:
+        seconds = int(value)
+    except ValueError:
+        # Not only "abc": str.isdigit() accepts "²", which int() rejects.
+        seconds = 0
+    if seconds > 0:
+        return seconds
     logger.warning(
         "Ignoring %s=%r: expected a positive integer; using %d",
         TIMEOUT_ENV,

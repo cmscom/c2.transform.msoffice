@@ -190,7 +190,7 @@ def test_timeout_from_environment(monkeypatch, value, expected):
     assert run.calls[0][1]["timeout"] == expected
 
 
-@pytest.mark.parametrize("value", ["abc", "0", "-3", "1.5"])
+@pytest.mark.parametrize("value", ["abc", "0", "-3", "1.5", "²"])
 def test_invalid_timeout_falls_back_to_default(monkeypatch, caplog, value):
     monkeypatch.setenv("C2_TRANSFORM_MSOFFICE_TIMEOUT", value)
     run = fake_run(monkeypatch, stdout=b"x")
