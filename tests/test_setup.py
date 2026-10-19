@@ -86,21 +86,30 @@ class TestUninstall:
         setup_tool.runAllImportStepsFromProfile(UNINSTALL_PROFILE)
         assert TRANSFORM_NAME not in transforms.objectIds()
 
-    def test_unmapping_error_is_logged_and_uninstall_continues(
-        self, installer, transforms, setup_tool, monkeypatch, caplog
+    def test_missing_mapping_still_removes_the_transform(
+        self, installer, transforms, caplog
     ):
         installer.install_product(PACKAGE_NAME)
-
-        def broken_unregister(self, name):
-            raise KeyError("text/plain")
-
-        monkeypatch.setattr(
-            type(aq_base(transforms)), "unregisterTransform", broken_unregister
-        )
+        # A site where the DOCX -> text/plain mapping got lost:
+        # unregisterTransform raises KeyError before it deletes the transform.
+        del transforms._mtmap[DOCX]["text/plain"]
         with caplog.at_level(logging.WARNING, logger=PACKAGE_NAME):
             installer.uninstall_product(PACKAGE_NAME)
         assert installer.is_product_installed(PACKAGE_NAME) is False
+        assert TRANSFORM_NAME not in transforms.objectIds()
         assert [r.getMessage() for r in caplog.records] == [
-            "Could not unregister msoffice_to_text from portal_transforms: "
-            "KeyError('text/plain')"
+            "Could not unmap msoffice_to_text in portal_transforms: "
+            "KeyError('text/plain'); the transform was removed anyway"
+        ]
+
+    def test_install_after_a_missing_mapping_adds_the_transform(
+        self, installer, transforms
+    ):
+        installer.install_product(PACKAGE_NAME)
+        del transforms._mtmap[DOCX]["text/plain"]
+        installer.uninstall_product(PACKAGE_NAME)
+        installer.install_product(PACKAGE_NAME)
+        assert TRANSFORM_NAME in transforms.objectIds()
+        assert [t.name() for t in transforms._mtmap[DOCX]["text/plain"]] == [
+            "msoffice_to_text"
         ]

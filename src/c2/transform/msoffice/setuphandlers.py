@@ -56,9 +56,14 @@ def uninstall(context):
         transforms.unregisterTransform(config.TRANSFORM_NAME)
     except KeyError as error:
         # unregisterTransform unmaps first and raises KeyError when a MIME
-        # type was never mapped to this transform.
+        # type was never mapped to this transform; it has not deleted the
+        # transform yet. Delete it, so that installing again adds it anew.
+        # Without events, because Transform.manage_beforeDelete unmaps again
+        # and OFS re-raises that KeyError in debug mode for non-Managers.
+        transforms._delObject(config.TRANSFORM_NAME, suppress_events=True)
         logger.warning(
-            "Could not unregister %s from portal_transforms: %r",
+            "Could not unmap %s in portal_transforms: %r; "
+            "the transform was removed anyway",
             config.TRANSFORM_NAME,
             error,
         )
