@@ -1,57 +1,119 @@
-Introduction
-============
+# c2.transform.msoffice
 
-Description
--------------
+Make Microsoft Office files searchable in Plone.
 
-- This product enables to search MS-Office files on Plone.
-- Include Apache POI 3.17 package by jar file.
+The package adds a `portal_transforms` transform, `msoffice_to_text`, that
+extracts plain text from Word, Excel and PowerPoint files. Plone uses it to
+index the text of uploaded File objects, so a search finds words inside the
+documents.
 
-  - http://poi.apache.org/
+Text is extracted by a bundled Java program (`msdoc2txt.jar`, built on
+[Apache POI](https://poi.apache.org/) 3.17).
 
-- Code repository
+## Supported versions
 
-  - https://bitbucket.org/cmscom/c2.transform.msoffice
+- Plone 6.0, 6.1 and 6.2
+- Python 3.10 to 3.14 (as far as each Plone version supports them)
+- Java 8 or later on `PATH` (CI uses Temurin 21)
+- Linux and other POSIX systems. Windows is not supported.
 
-- Java code
+## Supported files
 
-  - https://bitbucket.org/cmscom/msdoc2txt
+- Word: `.doc`, `.docx`, `.docm`
+- Excel: `.xls`, `.xlsx`, `.xlsm`, `.xlsb`
+- PowerPoint: `.pptx`, `.pptm` (see the known issues for `.ppt`)
 
+## Installation
 
-Support files
-----------------
-- MS-Office files
+1. Install Java (a headless JRE is enough) so that `java` is on the `PATH` of
+   the Zope process.
+2. Add `c2.transform.msoffice` to your project's dependencies, for example
+   with pip:
 
-  - MS-Word 95-2000, XP, 2007 and xml-format
-  - MS-Excel 95-2000, XP, 2007 and xml-format
-  - MS-PowerPoint 95-2000, XP, 2007 and xml-format
+   ```shell
+   pip install c2.transform.msoffice
+   ```
 
-Requirement
--------------
+3. Restart Zope and activate **c2.transform.msoffice** in the add-ons control
+   panel (or apply the `c2.transform.msoffice:default` profile).
 
-- Plone
+Existing File objects get their text indexed the next time they are
+reindexed, for example with "Clear and Rebuild" in the catalog.
 
-  - Plone 3.0-3.3 and Plone 4.x and 5.0 / 5.1 (tested by 5.1 CentOS 7 64bit)
+### Upgrading from 1.0b6
 
-- Java
+2.0 has no upgrade step from 1.0b6. After upgrading the package, deactivate
+the add-on and activate it again in the add-ons control panel. This replaces
+the transform that 1.0b6 registered.
 
-  - Java 8
+1.0b6 used `pkg_resources` namespace packages; 2.0 uses PEP 420 namespace
+packages. If your site also uses other `c2.*` packages that still declare a
+`pkg_resources` namespace, install
+[horse-with-no-namespace](https://pypi.org/project/horse-with-no-namespace/)
+so that both kinds can be imported together.
 
-- OS
+## How it works
 
-  - Linux(like Unix)
-  - no support for Windows
+For each document, the transform starts `java` with the bundled jar, writes
+the document to its standard input and reads the text from its standard
+output:
 
-Credits
----------
+```shell
+java -Xmx512m -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -jar msdoc2txt.jar < document.docx
+```
 
-This code was inspired by Products.OpenXml
+- The text is always written in UTF-8, also when the process has no locale
+  (as in slim container images).
+- The exit code decides success. A document without text gives empty text.
+- If `java` cannot be run, exits with an error or takes too long, the text is
+  empty and an error is logged. Saving the file is not affected.
+- Neither the document nor its text is written to the log.
 
+## Configuration
 
-Contributors
----------------
-- Manabu Terada(Twitter: @Terapyon) (Main code)
-- Mikio Hokari (Java code & Extend call)
-- Takashi Nagai (Support Windows)
-- Takayuki Nagai (Bug fix for 1.0b4 tnagai@cc.kumamoto-u.ac.jp)
-- Tetsuya Morimoto (Refactoring Java code and Support POI 3.17)
+Set these environment variables for the Zope process:
+
+- `C2_TRANSFORM_MSOFFICE_TIMEOUT`: seconds to wait for `java` before it is
+  killed. Default `60`.
+- `C2_TRANSFORM_MSOFFICE_JAVA_OPTS`: JVM options, split like a shell command
+  line. They replace the default `-Xmx512m`, for example
+  `-Xmx1g -XX:+UseSerialGC`. The encoding options are always added.
+
+## Memory
+
+Each transform runs its own JVM. Up to one JVM per Zope thread can run at the
+same time, each with a heap of up to 512 MB (by default) plus the memory of
+the JVM itself. Plan the memory of the server or container for that.
+
+## Known issues
+
+- The bundled jar cannot extract text from `.ppt` files (PowerPoint 97-2003).
+  The transform runs, logs an error and gives empty text. `.pptx` files work.
+  This will be fixed when the jar is updated.
+
+## Uninstall
+
+Deactivate the add-on in the add-ons control panel. This removes the
+transform. The MIME types are kept, because other add-ons may use them.
+
+## Source code
+
+- This package: <https://github.com/cmscom/c2.transform.msoffice>
+- Java program: <https://bitbucket.org/cmscom/msdoc2txt>
+
+## Credits
+
+This code was inspired by Products.OpenXml.
+
+## Contributors
+
+- Manabu Terada (main code)
+- Mikio Hokari (Java code and extended calls)
+- Takashi Nagai (Windows support)
+- Takayuki Nagai (bug fix for 1.0b4)
+- Tetsuya Morimoto (refactoring of the Java code and POI 3.17 support)
+
+## License
+
+GNU General Public License, version 2 or later. See `LICENSE.txt` and
+`LICENSE.GPL`.

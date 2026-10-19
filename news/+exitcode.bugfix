@@ -1,0 +1,1 @@
+Decide success by the exit code of `java`. Text is no longer thrown away when the jar writes a warning to stderr, and a document without text no longer logs an error. [terapyon]

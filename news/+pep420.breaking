@@ -1,0 +1,1 @@
+`c2` and `c2.transform` are now PEP 420 namespace packages. Sites that also use `c2.*` packages with `pkg_resources` namespaces need `horse-with-no-namespace`. [terapyon]
