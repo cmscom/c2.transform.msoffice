@@ -1,156 +1,139 @@
-#!/usr/bin/env python
-# encoding: utf-8
-import os
-import sys
-import signal
-import mimetypes
-import subprocess
-if sys.platform == 'win32':
-    isWIN = True
-    import time
-    try:
-        import ctypes
-    except ImportError:
-        ctypes = None
-else:
-    isWIN = False
-    import select
-    import time
-    import threading
+"""Extract plain text from Microsoft Office files with the bundled jar."""
 
-from zope.interface import implements
-try:
-    from Products.PortalTransforms.interfaces import ITransform
-    HAS_PLONE3 = False
-except ImportError:
-    from Products.PortalTransforms.interfaces import itransform
-    HAS_PLONE3 = True
-from config import SITE_CHARSET, TRANSFORM_NAME
 from c2.transform.msoffice import logger
+from c2.transform.msoffice.config import SITE_CHARSET
+from c2.transform.msoffice.config import TRANSFORM_NAME
+from pathlib import Path
+from Products.PortalTransforms.interfaces import ITransform
+from zope.interface import implementer
 
-scpath = os.path.join(os.path.dirname(__file__), 'msdoc2txt.jar')
-
-def win_kill(pid):
-    if ctypes:
-        h = ctypes.windll.kernel32.OpenProcess(1, False, pid)
-        ctypes.windll.kernel32.TerminateProcess(h, -1)
-        ctypes.windll.kernel32.CloseHandle(h)
-    else:
-        subprocess.call(["TASKKILL", "/PID", str(pid), "/F"])
-
-def win_timeout(p, timeout):
-    s = time.time()
-    while time.time() - s < timeout and p.poll() == None:
-        time.sleep(0.1)
-    if p.poll() == None:
-        win_kill(p.pid)
-        return False
-    return True
-
-def msdoc2txt(data, timeout=60): #default 60 sec
-    assert isinstance(data, str)
-    p = subprocess.Popen(("java", '-jar', '-Xmx512m', scpath),
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE,
-                         stdin=subprocess.PIPE)
-    if not isWIN:
-        # Based on the code from http://betabug.ch/blogs/ch-athens/1093
-        kill_check = threading.Event()
-        def _kill_process_after_a_timeout(pid):
-            os.kill(pid, signal.SIGTERM)
-            kill_check.set() # tell the main routine that we had to kill
-            # use SIGKILL if hard to kill...
-            return
-
-        pid = p.pid
-        watchdog = threading.Timer(timeout, _kill_process_after_a_timeout, args=(pid, ))
-        watchdog.start()
-        (out,err) = p.communicate(input=data)
-        watchdog.cancel() # if it's still waiting to run
-        success = not kill_check.isSet()
-        kill_check.clear()
-
-        if success:
-            if err:
-                status = False
-                val = err
-            elif out:
-                status = True
-                val = out
-        else:
-            status = None
-            val = "timeout" #if timeout
-
-        return status, val
-    else:
-        r = win_timeout(p, timeout)
-        if r:
-            if p.poll():
-                return False, p.stderr.read() #if fail
-            else:
-                return True, p.stdout.read() #if not fail
-        else:
-            return None, "timeout" #if timeout
+import os
+import shlex
+import subprocess
 
 
+JAR_PATH = Path(__file__).with_name("msdoc2txt.jar")
+
+TIMEOUT_ENV = "C2_TRANSFORM_MSOFFICE_TIMEOUT"
+JAVA_OPTS_ENV = "C2_TRANSFORM_MSOFFICE_JAVA_OPTS"
+DEFAULT_TIMEOUT = 60
+DEFAULT_JAVA_OPTS = ("-Xmx512m",)
+# The jar writes text in the JVM's default encoding. JDK 8-17 take it from
+# file.encoding and JDK 19+ from stdout.encoding, so both are always set.
+# They come after the options from the environment so they always win.
+ENCODING_OPTS = ("-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8")
+# How much of the jar's stderr (a Java stack trace) goes into the log.
+STDERR_LOG_LIMIT = 500
+
+
+def timeout() -> int:
+    """Seconds to wait for the jar, from the environment or the default."""
+    value = os.environ.get(TIMEOUT_ENV, "").strip()
+    if not value:
+        return DEFAULT_TIMEOUT
+    if value.isdigit() and int(value) > 0:
+        return int(value)
+    logger.warning(
+        "Ignoring %s=%r: expected a positive integer; using %d",
+        TIMEOUT_ENV,
+        value,
+        DEFAULT_TIMEOUT,
+    )
+    return DEFAULT_TIMEOUT
+
+
+def java_command() -> list[str]:
+    java_opts = shlex.split(os.environ.get(JAVA_OPTS_ENV, "")) or DEFAULT_JAVA_OPTS
+    return ["java", *java_opts, *ENCODING_OPTS, "-jar", str(JAR_PATH)]
+
+
+def msdoc2txt(data: bytes) -> str | None:
+    """Return the text of an Office document, or None if extraction failed.
+
+    The document goes to the jar on stdin and the text comes back on stdout.
+    The exit code decides success: an empty stdout with exit code 0 is a
+    document without text. Neither the document nor the text is logged.
+    """
+    seconds = timeout()
+    try:
+        result = subprocess.run(  # noqa: S603
+            java_command(), input=data, capture_output=True, timeout=seconds
+        )
+    except subprocess.TimeoutExpired:
+        # subprocess.run kills the process and waits for it.
+        logger.error("msdoc2txt timed out after %d seconds", seconds)
+        return None
+    except FileNotFoundError:
+        logger.error("msdoc2txt could not run: java was not found")
+        return None
+    except Exception:
+        logger.exception("msdoc2txt could not run")
+        return None
+    if result.returncode != 0:
+        stderr = result.stderr.decode("utf-8", errors="replace")
+        logger.error(
+            "msdoc2txt failed with exit code %d: %s",
+            result.returncode,
+            stderr[:STDERR_LOG_LIMIT],
+        )
+        return None
+    if not result.stdout:
+        logger.debug("msdoc2txt returned no text")
+    return result.stdout.decode("utf-8", errors="replace")
+
+
+@implementer(ITransform)
 class msoffice_to_text:
-    if HAS_PLONE3:
-        __implements__ = itransform
-    else:
-        implements(ITransform)
     __name__ = TRANSFORM_NAME
 
     inputs = (
         # MS-Word formats
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-word.document.macroEnabled.12',
-        # MS-Excle formats
-        'application/vnd.ms-excel',
-        'application/msexcel',
-        'application/x-msexcel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
-        'application/vnd.ms-excel.sheet.macroEnabled.12',
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-word.document.macroEnabled.12",
+        # MS-Excel formats
+        "application/vnd.ms-excel",
+        "application/msexcel",
+        "application/x-msexcel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
+        "application/vnd.ms-excel.sheet.macroEnabled.12",
         # MS-PowerPoint formats
-        'application/powerpoint',
-        'application/mspowerpoint',
-        'application/x-mspowerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
-        )
+        "application/vnd.ms-powerpoint",
+        "application/powerpoint",
+        "application/mspowerpoint",
+        "application/x-mspowerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
+    )
 
-    output = 'text/plain'
+    output = "text/plain"
 
     output_encoding = SITE_CHARSET
 
-    def __init__(self,name=None):
+    def __init__(self, name=None):
         if name:
-            self.__name__=name
-        return
+            self.__name__ = name
 
     def name(self):
         return self.__name__
 
     def convert(self, orig, data, **kwargs):
-        #orig_file = kwargs.get('filename') or 'unknown.xxx'
-        mimetype = kwargs.get('mimetype')
-        filename = kwargs.get('filename') or 'unknown.xxx'
+        """Set the text of ``orig`` (bytes) on ``data``.
 
-        if mimetype is None:
-            mimetype = mimetypes.guess_type(filename)[0]
-        try:
-            status, text = msdoc2txt(orig)
-        except Exception, e:
-            logger.error(e, exc_info=True)
-            data.setData('')
+        On any failure the text is empty, so saving the file still works.
+        """
+        if not isinstance(orig, bytes):
+            logger.error(
+                "msoffice_to_text expects bytes, got %s; no text is extracted",
+                type(orig).__name__,
+            )
+            data.setData("")
             return data
-        if status:
-            data.setData(text)
-        else:
-            logger.error(text, exc_info=True)
-            data.setData('')
+        text = msdoc2txt(orig)
+        data.setData(text or "")
         return data
+
 
 def register():
     return msoffice_to_text()

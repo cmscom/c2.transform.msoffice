@@ -1,8 +1,13 @@
+"""Make Microsoft Office files searchable in Plone."""
+
+# Importing config registers the Office types with the mimetypes module.
+from c2.transform.msoffice import config  # noqa: F401
 
 import logging
-import config
 
-logger = logging.getLogger(config.PROJECTNAME)
 
-# def initialize(context):
-#     """Initializer called when used as a Zope 2 product."""
+__version__ = "2.0.0.dev0"
+
+PACKAGE_NAME = "c2.transform.msoffice"
+
+logger = logging.getLogger(PACKAGE_NAME)
