@@ -56,8 +56,14 @@ def msdoc2txt(data: bytes) -> str | None:
     """
     seconds = timeout()
     try:
+        command = java_command()
+    except ValueError:
+        # shlex could not split the options, for example an unclosed quote.
+        logger.error("JVM options in %s could not be parsed", JAVA_OPTS_ENV)
+        return None
+    try:
         result = subprocess.run(  # noqa: S603
-            java_command(), input=data, capture_output=True, timeout=seconds
+            command, input=data, capture_output=True, timeout=seconds
         )
     except subprocess.TimeoutExpired:
         # subprocess.run kills the process and waits for it.

@@ -218,3 +218,14 @@ def test_blank_java_opts_use_default(monkeypatch):
     run = fake_run(monkeypatch, stdout=b"x")
     convert(DOCUMENT)
     assert run.calls[0][0][1] == "-Xmx512m"
+
+
+def test_java_opts_that_cannot_be_parsed(monkeypatch, caplog):
+    monkeypatch.setenv("C2_TRANSFORM_MSOFFICE_JAVA_OPTS", '-Xmx1g "-Dunclosed')
+    run = fake_run(monkeypatch, stdout=b"x")
+    assert convert(DOCUMENT) == ""
+    assert run.calls == []
+    assert [r.getMessage() for r in caplog.records] == [
+        "JVM options in C2_TRANSFORM_MSOFFICE_JAVA_OPTS could not be parsed"
+    ]
+    assert caplog.records[0].exc_info is None
