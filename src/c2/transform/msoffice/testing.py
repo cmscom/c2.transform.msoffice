@@ -1,4 +1,5 @@
 from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
+from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import PloneSandboxLayer
@@ -12,6 +13,9 @@ class Layer(PloneSandboxLayer):
     def setUpZope(self, app, configurationContext):
         # z3c.autoinclude is disabled in the Plone fixture base layer.
         self.loadZCML(package=c2.transform.msoffice)
+
+    def setUpPloneSite(self, portal):
+        applyProfile(portal, "c2.transform.msoffice:default")
 
 
 FIXTURE = Layer()
