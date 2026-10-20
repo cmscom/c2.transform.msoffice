@@ -105,6 +105,16 @@ class TestRealJava:
                 PPTX,
                 ["Presentation slide example", "スライドの例です。"],
             ),
+            (
+                "presentation-notes.pptx",
+                PPTX,
+                [
+                    "Presentation with notes",
+                    "ノート付きのスライドです。",
+                    "Speaker notes example",
+                    "発表者のノートです。",
+                ],
+            ),
         ],
     )
     def test_other_formats(self, portal, name, content_type, expected):

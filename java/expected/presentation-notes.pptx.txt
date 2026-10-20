@@ -1,0 +1,6 @@
+Speaker notes example
+発表者のノートです。
+
+Presentation with notes
+ノート付きのスライドです。
+
