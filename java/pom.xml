@@ -12,8 +12,10 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>11</maven.compiler.release>
-    <!-- Fixed for reproducible builds: the time stamp of every entry in the
-         jar. Change it when the jar changes. -->
+    <!-- Fixed for reproducible builds: the time stamp of the entries that
+         this build makes. Entries copied from the dependencies keep their
+         own time stamps; CI checks that the final jar is the same as the
+         committed one. Change it when the jar changes. -->
     <project.build.outputTimestamp>2026-10-20T00:00:00Z</project.build.outputTimestamp>
     <poi.version>5.5.1</poi.version>
   </properties>

@@ -60,7 +60,8 @@ from short text and CSV files (`soffice --headless --convert-to docx
 document.txt`, the CSV with `--infilter="CSV:44,34,76,1"`, and the
 presentation by converting a PDF of the text with
 `--infilter=impress_pdf_import`); `<cp:revision>` was then removed from
-`docProps/core.xml` of the OOXML files, because the jar prints it as text. `empty.docx` is a converted empty text file.
+`docProps/core.xml` of the OOXML files, because the jar prints it as text.
+`empty.docx` is a converted empty text file.
 
 `presentation.ppt` was written with the Apache POI 3.17 classes of the jar
 bundled at the time (`HSLFSlideShow` with one text box), because it is much

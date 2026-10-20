@@ -65,6 +65,9 @@ When the output changes, find out why before you change an expected file.
 3. Commit `pom.xml`, the jar and, if the change is intended, the expected
    files.
 
+`pom.xml` is part of the jar, so any change to it needs a rebuild, even a
+change of a comment.
+
 ## How the jar is put together
 
 `pom.xml` builds one jar with all dependencies, with maven-shade-plugin:
@@ -90,9 +93,10 @@ Math), the Log4j API, SparseBitSet and RTF Parser Kit. The license files of
 POI and Commons Math have additional terms for parts of them, for example
 for the ECMA-376 schemas in POI. curvesapi is under a BSD license.
 
-The license and notice files of all libraries are kept in the jar:
-`META-INF/LICENSE` and `META-INF/LICENSE.txt` have the license files of the
-libraries one after another, and `META-INF/NOTICE` the merged notices.
+The license and notice files that the libraries ship are kept in the jar
+(the SparseBitSet and RTF Parser Kit jars have none): `META-INF/LICENSE` and
+`META-INF/LICENSE.txt` have the license files one after another, and
+`META-INF/NOTICE` the merged notices.
 curvesapi has no license file in its jar, so `licenses/curvesapi-LICENSE.txt`
 is a copy of `license.txt` of curvesapi 1.08
 (<https://github.com/virtuald/curvesapi/blob/1.08/license.txt>); it goes
