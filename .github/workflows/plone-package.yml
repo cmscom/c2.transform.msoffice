@@ -2,6 +2,7 @@ name: Plone package
 
 # Every action is pinned to a full commit SHA of a release that has been out
 # for at least two weeks (cooldown). The comment after each SHA is the tag.
+# Container images are pinned by digest in the same way.
 
 on:
   push:
@@ -46,6 +47,33 @@ jobs:
         run: python -m pip install tox
       - name: Mypy
         run: tox -e mypy
+
+  jar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # java/build.sh uses the pinned Maven image, not the runner's Maven
+      # and JDK, so the jar must be the same as the committed one.
+      - name: Build the jar
+        run: java/build.sh "$RUNNER_TEMP/msdoc2txt.jar"
+      - name: Compare with the committed jar
+        run: |
+          sha256sum src/c2/transform/msoffice/msdoc2txt.jar "$RUNNER_TEMP/msdoc2txt.jar"
+          cmp src/c2/transform/msoffice/msdoc2txt.jar "$RUNNER_TEMP/msdoc2txt.jar"
+      # eclipse-temurin:11.0.32_9-jre-noble
+      - name: Check the output with Java 11
+        run: >-
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD":/src:ro -w /src
+          eclipse-temurin@sha256:e69ed7d96d8e2a174057ee33cc3a4bb54c5b172dd24d41c22c032789d7bdef9b
+          java/check-output.sh src/c2/transform/msoffice/msdoc2txt.jar
+      # eclipse-temurin:21.0.12_8-jre-noble
+      - name: Check the output with Java 21
+        run: >-
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD":/src:ro -w /src
+          eclipse-temurin@sha256:7739f0ffce786528961eea6bf46d9610ee968ac6127c9b2e93494757bdecce9f
+          java/check-output.sh src/c2/transform/msoffice/msdoc2txt.jar
 
   test:
     runs-on: ubuntu-latest
