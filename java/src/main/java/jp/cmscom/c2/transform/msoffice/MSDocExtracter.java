@@ -11,16 +11,13 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.poi.POIDocument;
-import org.apache.poi.POIOLE2TextExtractor;
-import org.apache.poi.POITextExtractor;
-import org.apache.poi.POIXMLDocument;
-import org.apache.poi.POIXMLProperties;
-import org.apache.poi.POIXMLProperties.CoreProperties;
 import org.apache.poi.extractor.ExtractorFactory;
+import org.apache.poi.extractor.POITextExtractor;
 import org.apache.poi.hdgf.HDGFDiagram;
 import org.apache.poi.hdgf.extractor.VisioTextExtractor;
 import org.apache.poi.hpsf.SummaryInformation;
-import org.apache.poi.hslf.extractor.PowerPointExtractor;
+import org.apache.poi.hslf.usermodel.HSLFSlideShow;
+import org.apache.poi.hslf.usermodel.HSLFSlideShowImpl;
 import org.apache.poi.hssf.extractor.ExcelExtractor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hwpf.HWPFDocument;
@@ -29,10 +26,14 @@ import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackagePart;
 import org.apache.poi.openxml4j.opc.PackageRelationshipCollection;
+import org.apache.poi.ooxml.POIXMLDocument;
+import org.apache.poi.ooxml.POIXMLProperties;
+import org.apache.poi.ooxml.POIXMLProperties.CoreProperties;
+import org.apache.poi.ooxml.extractor.POIXMLExtractorFactory;
 import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.Entry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.xslf.extractor.XSLFPowerPointExtractor;
+import org.apache.poi.sl.extractor.SlideShowExtractor;
 import org.apache.poi.xslf.usermodel.XSLFRelation;
 import org.apache.poi.xslf.usermodel.XSLFSlideShow;
 import org.apache.poi.xssf.usermodel.XSSFRelation;
@@ -91,13 +92,18 @@ public class MSDocExtracter implements DocExtracter {
 
 	public MSDocExtracter(POIFSFileSystem fs) throws IOException, OpenXML4JException, XmlException {
 		this();
-		this.extractMetadata(fs);
-		POIOLE2TextExtractor oleTextExtractor = ExtractorFactory.createExtractor(fs);
-		this.extractContents(oleTextExtractor);
+		POIDocument doc = this.getDocument(fs);
+		this.extractMetadata(doc);
+		if (doc instanceof HSLFSlideShowImpl) {
+			// The slide show that was read for the metadata gives the text too.
+			// The extractor is not closed: that would close the file system.
+			this.extractContents(new SlideShowExtractor<>(new HSLFSlideShow((HSLFSlideShowImpl) doc)));
+		} else {
+			this.extractContents(ExtractorFactory.createExtractor(fs));
+		}
 	}
 
-	private void extractMetadata(POIFSFileSystem fs) throws IOException {
-		POIDocument doc = this.getDocument(fs);
+	private void extractMetadata(POIDocument doc) {
 		if (doc == null) {
 			return;
 		}
@@ -133,11 +139,8 @@ public class MSDocExtracter implements DocExtracter {
 				return new HWPFDocument(fs);
 			}
 			if (entryName.equals("PowerPoint Document")) {
-				try (PowerPointExtractor pptExtractor = new PowerPointExtractor(fs)) {
-					POIDocument doc = pptExtractor.getDocument();
-					logger.info("document type: PowerPointExtractor");
-					return doc;
-				}
+				logger.info("document type: HSLFSlideShowImpl");
+				return new HSLFSlideShowImpl(fs);
 			}
 			if (entryName.equals("VisioDocument")) {
 				logger.info("document type: VisioDocument");
@@ -152,7 +155,7 @@ public class MSDocExtracter implements DocExtracter {
 	public MSDocExtracter(OPCPackage pkg) throws IOException, OpenXML4JException, XmlException {
 		this();
 		this.extractMetadata(pkg);
-		POITextExtractor oleTextExtractor = ExtractorFactory.createExtractor(pkg);
+		POITextExtractor oleTextExtractor = new POIXMLExtractorFactory().create(pkg);
 		this.extractContents(oleTextExtractor);
 	}
 
@@ -221,19 +224,14 @@ public class MSDocExtracter implements DocExtracter {
 			this.document.get(DocPart.Footer).add(Optional.ofNullable(wordExtractor.getFooterText()));
 			this.document.get(DocPart.Header).add(Optional.ofNullable(wordExtractor.getHeaderText()));
 		}
-		// PowerPoint Presentation.
-		else if (textExtractor instanceof PowerPointExtractor) {
-			logger.info("extracter is PowerPointExtractor");
-			PowerPointExtractor powerPointExtractor = (PowerPointExtractor) textExtractor;
-			this.document.get(DocPart.Contents).add(Optional.ofNullable(powerPointExtractor.getText()));
-			this.document.get(DocPart.Notes).add(Optional.ofNullable(powerPointExtractor.getNotes()));
-		}
-		// XSLFPowerPoint Presentation.
-		else if (textExtractor instanceof XSLFPowerPointExtractor) {
-			logger.info("extracter is XSLFPowerPointExtractor");
-			XSLFPowerPointExtractor powerPointExtractor = (XSLFPowerPointExtractor) textExtractor;
-			this.document.get(DocPart.Contents).add(Optional.ofNullable(powerPointExtractor.getText()));
-			this.document.get(DocPart.Notes).add(Optional.ofNullable(powerPointExtractor.getText(false, true)));
+		// PowerPoint Presentation (.ppt and .pptx).
+		else if (textExtractor instanceof SlideShowExtractor) {
+			logger.info("extracter is SlideShowExtractor");
+			SlideShowExtractor<?, ?> slideShowExtractor = (SlideShowExtractor<?, ?>) textExtractor;
+			this.document.get(DocPart.Contents).add(Optional.ofNullable(slideShowExtractor.getText()));
+			slideShowExtractor.setSlidesByDefault(false);
+			slideShowExtractor.setNotesByDefault(true);
+			this.document.get(DocPart.Notes).add(Optional.ofNullable(slideShowExtractor.getText()));
 		}
 		// Visio Drawing
 		else if (textExtractor instanceof VisioTextExtractor) {

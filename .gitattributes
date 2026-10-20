@@ -1,3 +1,5 @@
 # The expected output of the jar is compared byte for byte (the .doc text
 # has CRLF line ends); never convert line ends.
 java/expected/*.txt -text
+# Third-party license texts are kept exactly as copied from upstream.
+java/licenses/* -text
