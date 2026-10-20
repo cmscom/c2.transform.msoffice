@@ -230,7 +230,8 @@ parallel = true
 [tool.check-manifest]
 # Files in git that are not in the sdist. The sdist has the package, the
 # README, the changelog and the licenses only; MANIFEST.in leaves out the
-# rest (tests/ with "prune"). The Java source is in the git repository.
+# rest (tests/ with "prune"), and check-manifest ignores .github/ itself.
+# The Java source is in the git repository only.
 ignore = [
     ".editorconfig",
     "java/**",
