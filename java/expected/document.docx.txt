@@ -1,0 +1,3 @@
+This is a simple example of a document with a full set of metadata and comments.
+これは日本語の文書の例です。
+

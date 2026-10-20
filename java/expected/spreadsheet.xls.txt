@@ -1,0 +1,8 @@
+0
+spreadsheet
+&"Times New Roman,標準"&12&A	
+Fruit	Count
+Apple	3
+みかん	5
+&"Times New Roman,標準"&12ページ &P	
+

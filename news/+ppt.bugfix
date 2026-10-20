@@ -1,0 +1,1 @@
+Extract text from `.ppt` files (PowerPoint 97-2003). The bundled jar closed the file before it read the text, so every `.ppt` gave no text. [terapyon]

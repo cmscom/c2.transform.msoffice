@@ -8,13 +8,13 @@ index the text of uploaded File objects, so a search finds words inside the
 documents.
 
 Text is extracted by a bundled Java program (`msdoc2txt.jar`, built on
-[Apache POI](https://poi.apache.org/) 3.17).
+[Apache POI](https://poi.apache.org/) 5.5.1). Its source is in `java/`.
 
 ## Supported versions
 
 - Plone 6.0, 6.1 and 6.2
 - Python 3.10 to 3.14 (as far as each Plone version supports them)
-- Java 8 or later on `PATH` (CI uses Temurin 21)
+- Java 11 or later on `PATH` (CI checks the jar with Temurin 11 and 21)
 - Linux and other POSIX systems. Windows is not supported.
 
 ## Accepted MIME types
@@ -36,9 +36,9 @@ The transform is registered for these MIME types:
 
 ### Tested formats
 
-The tests extract text from `.docx`, `.doc`, `.xlsx`, `.xls` and `.pptx`
-files. `.ppt` files give no text (see the known issues). The other formats
-are passed to the jar but are not covered by the tests.
+The tests extract text from `.docx`, `.doc`, `.xlsx`, `.xls`, `.pptx` and
+`.ppt` files, including the speaker notes of presentations. The other
+formats are passed to the jar but are not covered by the tests.
 
 ## Installation
 
@@ -58,6 +58,8 @@ Existing File objects get their text indexed the next time they are
 reindexed, for example with "Clear and Rebuild" in the catalog.
 
 ### Upgrading from 1.0b6
+
+2.0 needs Java 11 or later; 1.0b6 ran on Java 8.
 
 2.0 has no upgrade step from 1.0b6. After upgrading the package, deactivate
 the add-on and activate it again in the add-ons control panel. This replaces
@@ -104,12 +106,6 @@ Each transform runs its own JVM. Up to one JVM per Zope thread can run at the
 same time, each with a heap of up to 512 MB (by default) plus the memory of
 the JVM itself. Plan the memory of the server or container for that.
 
-## Known issues
-
-- The bundled jar cannot extract text from `.ppt` files (PowerPoint 97-2003).
-  The transform runs, logs an error and gives empty text. `.pptx` files work.
-  This will be fixed when the jar is updated.
-
 ## Uninstall
 
 Deactivate the add-on in the add-ons control panel. This removes the
@@ -118,7 +114,8 @@ transform. The MIME types are kept, because other add-ons may use them.
 ## Source code
 
 - This package: <https://github.com/cmscom/c2.transform.msoffice>
-- Java program: <https://bitbucket.org/cmscom/msdoc2txt>
+- Java program: `java/` in this repository (moved from
+  <https://bitbucket.org/cmscom/msdoc2txt>)
 
 ## Credits
 
@@ -134,5 +131,11 @@ This code was inspired by Products.OpenXml.
 
 ## License
 
-GNU General Public License, version 2 or later. See `LICENSE.txt` and
-`LICENSE.GPL`.
+c2.transform.msoffice is licensed under the GNU General Public License,
+version 2 or later. See `LICENSE.txt` and `LICENSE.GPL`.
+
+The bundled `msdoc2txt.jar` contains libraries under the Apache License 2.0
+(some of their license files have additional terms, for example for the
+ECMA-376 schemas in Apache POI) and under a BSD license (curvesapi). They
+are compatible with the package when it is used under the GPL version 3.
+The license files are in the jar, under `META-INF/`; see `java/README.md`.
