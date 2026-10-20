@@ -1,1 +1,0 @@
-Document a known issue: the bundled jar cannot extract text from `.ppt` files (this was already the case in 1.0b6). [terapyon]
