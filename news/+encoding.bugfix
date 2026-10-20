@@ -1,0 +1,1 @@
+Always pass `-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8` to `java`, so non-ASCII text is not replaced by `?` when the process has no locale (for example in slim container images). [terapyon]

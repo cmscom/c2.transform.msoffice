@@ -1,0 +1,1 @@
+Move to `pyproject.toml` and a `src/` layout, with tox, pytest, ruff, towncrier, zest.releaser and a GitHub Actions workflow that runs the tests with Java. Replace the test sample with self-made documents. [terapyon]

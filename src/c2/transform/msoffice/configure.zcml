@@ -1,0 +1,31 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="c2.transform.msoffice"
+    >
+
+  <genericsetup:registerProfile
+      name="default"
+      title="c2.transform.msoffice: Install"
+      description="Register the MS Office to text transform."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      directory="profiles/default"
+      post_handler=".setuphandlers.post_install"
+      />
+
+  <genericsetup:registerProfile
+      name="uninstall"
+      title="c2.transform.msoffice: Uninstall"
+      description="Remove the MS Office to text transform."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      directory="profiles/uninstall"
+      post_handler=".setuphandlers.uninstall"
+      />
+
+  <!-- Hide the uninstall profile -->
+  <utility
+      factory=".setuphandlers.HiddenProfiles"
+      name="c2.transform.msoffice"
+      />
+
+</configure>
