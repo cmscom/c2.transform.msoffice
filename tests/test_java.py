@@ -127,33 +127,28 @@ class TestRealJava:
             assert transformed(portal, "empty.docx", DOCX) == ""
         assert caplog.records == []
 
-    def test_ppt_gives_no_text_with_the_bundled_jar(self, portal, caplog):
-        """Known issue: the bundled jar cannot read .ppt files (see the xfail)."""
-        obj = add_file(portal, "presentation.ppt", PPT)
-        assert obj.file.data == (SAMPLES / "presentation.ppt").read_bytes()
-        # Creating the File indexes it once already.
-        caplog.clear()
-        with caplog.at_level(logging.ERROR, logger="c2.transform.msoffice"):
-            text = SearchableText_file(obj)()
-        assert "Presentation slide example" not in text
-        assert [r.getMessage() for r in caplog.records] == [
-            "msdoc2txt failed with exit code 1"
-        ]
-
-    @pytest.mark.xfail(
-        strict=True,
-        reason=(
-            "The bundled msdoc2txt.jar (POI 3.17) fails on every .ppt: "
-            "CurrentUserAtom.<init> -> 'Block 3 not found' / 'Unable to read 512 "
-            "bytes from 2048 in stream of length -1'. MSDocExtracter seems to close "
-            "the POIFS before HSLF reads the Current User stream. To be fixed when "
-            "the jar is updated."
-        ),
+    @pytest.mark.parametrize(
+        ("name", "expected"),
+        [
+            (
+                "presentation.ppt",
+                ["Presentation slide example", "スライドの例です。"],
+            ),
+            (
+                "presentation-notes.ppt",
+                [
+                    "Presentation with notes",
+                    "ノート付きのスライドです。",
+                    "Speaker notes example",
+                    "発表者のノートです。",
+                ],
+            ),
+        ],
     )
-    def test_ppt_text_is_searchable(self, portal):
-        text = text_of(portal, "presentation.ppt", PPT)
-        assert "Presentation slide example" in text
-        assert "スライドの例です。" in text
+    def test_ppt_text_is_searchable(self, portal, name, expected):
+        text = text_of(portal, name, PPT)
+        for part in expected:
+            assert part in text
 
 
 def test_saving_works_without_java(portal, monkeypatch, tmp_path, caplog):

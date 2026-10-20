@@ -18,12 +18,14 @@ for expected in "$here"/expected/*.txt; do
     if [ "$rc" -ne 0 ]; then
         echo "FAIL $name: exit code $rc"
         head -c 2000 "$work/err"
+        echo
         status=1
         continue
     fi
     if [ -s "$work/err" ]; then
         echo "FAIL $name: stderr is not empty"
         head -c 2000 "$work/err"
+        echo
         status=1
         continue
     fi
