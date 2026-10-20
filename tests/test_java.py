@@ -6,8 +6,10 @@ C2_TRANSFORM_MSOFFICE_REQUIRE_JAVA=1 is set (CI sets it); then they fail.
 
 from pathlib import Path
 from plone import api
+from plone.app.contenttypes.content import File
 from plone.app.contenttypes.indexers import SearchableText_file
 from plone.namedfile.file import NamedBlobFile
+from Products.CMFPlone.Portal import PloneSite
 
 import logging
 import os
@@ -27,7 +29,7 @@ PPTX = "application/vnd.openxmlformats-officedocument.presentationml.presentatio
 
 
 @pytest.fixture
-def java():
+def java() -> None:
     if shutil.which("java") is None:
         if os.environ.get(REQUIRE_JAVA) == "1":
             pytest.fail(f"java is not on PATH and {REQUIRE_JAVA}=1")
@@ -35,13 +37,13 @@ def java():
 
 
 @pytest.fixture
-def no_locale(monkeypatch):
+def no_locale(monkeypatch: pytest.MonkeyPatch) -> None:
     """Run java without a locale, like a slim container image."""
     monkeypatch.setenv("LC_ALL", "C")
     monkeypatch.delenv("LANG", raising=False)
 
 
-def add_file(portal, name: str, content_type: str):
+def add_file(portal: PloneSite, name: str, content_type: str) -> File:
     with api.env.adopt_roles(["Manager"]):
         return api.content.create(
             container=portal,
@@ -56,15 +58,17 @@ def add_file(portal, name: str, content_type: str):
         )
 
 
-def text_of(portal, name: str, content_type: str) -> str:
-    return SearchableText_file(add_file(portal, name, content_type))()
+def text_of(portal: PloneSite, name: str, content_type: str) -> str:
+    text: str = SearchableText_file(add_file(portal, name, content_type))()
+    return text
 
 
-def transformed(portal, name: str, content_type: str) -> str:
+def transformed(portal: PloneSite, name: str, content_type: str) -> str:
     data = portal.portal_transforms.convertTo(
         "text/plain", (SAMPLES / name).read_bytes(), mimetype=content_type
     )
-    return data.getData()
+    text: str = data.getData()
+    return text
 
 
 @pytest.mark.usefixtures("java", "no_locale")
