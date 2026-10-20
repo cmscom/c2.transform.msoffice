@@ -42,8 +42,8 @@ formats are passed to the jar but are not covered by the tests.
 
 ## Installation
 
-1. Install Java (a headless JRE is enough) so that `java` is on the `PATH` of
-   the Zope process.
+1. Install Java 11 or later (a headless JRE is enough) so that `java` is on
+   the `PATH` of the Zope process.
 2. Add `c2.transform.msoffice` to your project's dependencies, for example
    with pip:
 

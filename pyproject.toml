@@ -19,7 +19,7 @@ keywords = [
     "search",
 ]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Environment :: Web Environment",
     "Framework :: Plone",
     "Framework :: Plone :: 6.0",
@@ -227,5 +227,17 @@ source_pkgs = ["c2.transform.msoffice", "tests"]
 branch = true
 parallel = true
 
+[tool.check-manifest]
+# Files in git that are not in the sdist. The sdist has the package, the
+# README, the changelog and the licenses only; MANIFEST.in leaves out the
+# rest (tests/ with "prune"), and check-manifest ignores .github/ itself.
+# The Java source is in the git repository only.
+ignore = [
+    ".editorconfig",
+    "java/**",
+    "news/**",
+]
+
 [tool.zest-releaser]
-python-file-with-version = "src/c2/transform/msoffice/__init__.py"
+# fullrelease makes the tag; the release workflow uploads to PyPI.
+release = false
