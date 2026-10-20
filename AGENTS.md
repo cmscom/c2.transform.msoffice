@@ -18,7 +18,7 @@
   - `setuphandlers.py`: install and uninstall (`post_handler`s).
   - `msdoc2txt.jar`: the bundled Java program (Apache POI 5.5.1), built
     from `java/` with `java/build.sh`; do not change it by hand.
-- `tests/`: pytest tests (not shipped in the wheel).
+- `tests/`: pytest tests (not shipped in the wheel or the sdist).
   - `test_transform.py`, `test_config.py`: unit tests; `java` is replaced.
   - `test_setup.py`: install and uninstall in a Plone site.
   - `test_java.py`: runs the real jar on the files in `tests/samples/`.
@@ -50,6 +50,45 @@ After a change in `java/`, run `java/build.sh` (needs Docker) and
 `java/check-output.sh src/c2/transform/msoffice/msdoc2txt.jar`, and commit
 the jar with the change; CI rebuilds it and fails if it differs. If the
 output changes, find out why before you change a file in `java/expected/`.
+
+## Releasing
+
+The version is kept only in `pyproject.toml`; `__version__` is read from
+the installed metadata. Releases are made with zest.releaser and published
+to PyPI by `.github/workflows/release.yml` with Trusted Publishing; nothing
+is uploaded from a local machine.
+
+1. On an up-to-date `main` with the news fragments of the release, run
+   `fullrelease` (install it with `pip install -e ".[release]"`; the
+   environment needs `pip`, because check-manifest builds the sdist in an
+   isolated environment). It runs check-manifest and pyroma, asks for the
+   version (for example `2.0.0b1`), builds `CHANGELOG.md` from `news/`
+   with towncrier, commits, tags (the tag is the version, without `v`),
+   sets the next development version and asks before it pushes the
+   commits and the tag. `release = false` in `[tool.zest-releaser]` keeps
+   it from uploading.
+2. The pushed tag starts the release workflow: the tests of
+   `plone-package.yml`, then a build that checks that the tag is the
+   version in `pyproject.toml`, runs `twine check` and checks that the
+   wheel contains `msdoc2txt.jar`.
+3. The `publish` job waits for an approval of the `pypi` environment in
+   GitHub Actions. After the approval it uploads to PyPI.
+4. The `github-release` job signs the sdist and the wheel with Sigstore and
+   creates a GitHub Release for the tag, with the section of the version
+   from `CHANGELOG.md` and the files and their signatures attached. A
+   version with `a`, `b` or `rc` is marked as a pre-release.
+
+A manual run of the release workflow (workflow_dispatch) on a branch runs
+the tests and the build only, without publishing.
+
+Set up once:
+
+- On PyPI, add a Trusted Publisher to the project: owner `cmscom`,
+  repository `c2.transform.msoffice`, workflow `release.yml`, environment
+  `pypi`.
+- On GitHub, create the environment `pypi` with required reviewers (the
+  people who approve releases). Limiting its deployments to tags is
+  recommended.
 
 ## Test samples
 
