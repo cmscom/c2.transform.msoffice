@@ -17,14 +17,22 @@ DOCUMENT = b"PK\x03\x04 secret document body"
 class FakeRun:
     """Stands in for subprocess.run and records the calls."""
 
-    def __init__(self, returncode=0, stdout=b"", stderr=b"", error=None):
+    def __init__(
+        self,
+        returncode: int = 0,
+        stdout: bytes = b"",
+        stderr: bytes = b"",
+        error: Exception | None = None,
+    ) -> None:
         self.returncode = returncode
         self.stdout = stdout
         self.stderr = stderr
         self.error = error
         self.calls = []
 
-    def __call__(self, args, **kwargs):
+    def __call__(
+        self, args: list[str], **kwargs: object
+    ) -> subprocess.CompletedProcess[bytes]:
         self.calls.append((args, kwargs))
         if self.error is not None:
             raise self.error
@@ -34,18 +42,18 @@ class FakeRun:
 
 
 @pytest.fixture(autouse=True)
-def clean_environment(monkeypatch):
+def clean_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("C2_TRANSFORM_MSOFFICE_TIMEOUT", raising=False)
     monkeypatch.delenv("C2_TRANSFORM_MSOFFICE_JAVA_OPTS", raising=False)
 
 
-def fake_run(monkeypatch, **kwargs) -> FakeRun:
+def fake_run(monkeypatch: pytest.MonkeyPatch, **kwargs: object) -> FakeRun:
     run = FakeRun(**kwargs)
     monkeypatch.setattr(transform.subprocess, "run", run)
     return run
 
 
-def convert(orig) -> str:
+def convert(orig: bytes | str) -> str:
     data = datastream("test")
     result = transform.msoffice_to_text().convert(orig, data)
     assert result is data

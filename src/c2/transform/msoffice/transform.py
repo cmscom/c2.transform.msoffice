@@ -4,6 +4,7 @@ from c2.transform.msoffice import logger
 from c2.transform.msoffice.config import SITE_CHARSET
 from c2.transform.msoffice.config import TRANSFORM_NAME
 from pathlib import Path
+from Products.PortalTransforms.data import datastream
 from Products.PortalTransforms.interfaces import ITransform
 from zope.interface import implementer
 
@@ -116,16 +117,19 @@ class msoffice_to_text:
 
     output_encoding = SITE_CHARSET
 
-    def __init__(self, name=None):
+    def __init__(self, name: str | None = None) -> None:
         if name:
             self.__name__ = name
 
-    def name(self):
+    def name(self) -> str:
         return self.__name__
 
-    def convert(self, orig, data, **kwargs):
+    def convert(
+        self, orig: bytes | str, data: datastream, **kwargs: object
+    ) -> datastream:
         """Set the text of ``orig`` (bytes) on ``data``.
 
+        ``data`` is the datastream that portal_transforms made for the result.
         On any failure the text is empty, so saving the file still works.
         """
         if not isinstance(orig, bytes):
@@ -140,5 +144,5 @@ class msoffice_to_text:
         return data
 
 
-def register():
+def register() -> msoffice_to_text:
     return msoffice_to_text()

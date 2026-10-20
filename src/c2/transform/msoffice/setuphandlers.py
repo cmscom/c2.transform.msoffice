@@ -2,6 +2,7 @@ from c2.transform.msoffice import config
 from c2.transform.msoffice import logger
 from plone.base.interfaces import INonInstallable
 from Products.CMFCore.utils import getToolByName
+from Products.GenericSetup.tool import SetupTool
 from zope.interface import implementer
 
 
@@ -10,12 +11,12 @@ TRANSFORM_MODULE = "c2.transform.msoffice.transform"
 
 @implementer(INonInstallable)
 class HiddenProfiles:
-    def getNonInstallableProfiles(self):
+    def getNonInstallableProfiles(self) -> list[str]:
         """Hide the uninstall profile from site creation and the add-ons list."""
         return ["c2.transform.msoffice:uninstall"]
 
 
-def post_install(context):
+def post_install(context: SetupTool) -> None:
     """Register the Office MIME types and the transform.
 
     ``context`` is the setup tool. Running it again changes nothing.
@@ -47,7 +48,7 @@ def post_install(context):
     transforms.manage_addTransform(config.TRANSFORM_NAME, TRANSFORM_MODULE)
 
 
-def uninstall(context):
+def uninstall(context: SetupTool) -> None:
     """Remove the transform. The MIME types stay; others may use them."""
     transforms = getToolByName(context, "portal_transforms")
     if config.TRANSFORM_NAME not in transforms.objectIds():

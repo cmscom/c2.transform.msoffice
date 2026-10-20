@@ -6,7 +6,7 @@ import pytest
 
 
 @pytest.fixture
-def stdlib_mimetypes_only(monkeypatch):
+def stdlib_mimetypes_only(monkeypatch: pytest.MonkeyPatch) -> None:
     """Forget the host's mime.types (slim images do not have one).
 
     mimetypes.init(files=[]) keeps the current database, so it is replaced.

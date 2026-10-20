@@ -1,6 +1,10 @@
 from Acquisition import aq_base
 from c2.transform.msoffice import PACKAGE_NAME
 from plone.base.interfaces import INonInstallable
+from Products.CMFPlone.controlpanel.browser.quickinstaller import InstallerView
+from Products.CMFPlone.Portal import PloneSite
+from Products.GenericSetup.tool import SetupTool
+from Products.PortalTransforms.TransformEngine import TransformTool
 from zope.component import getUtility
 
 import logging
@@ -14,12 +18,12 @@ UNINSTALL_PROFILE = "profile-c2.transform.msoffice:uninstall"
 
 
 @pytest.fixture
-def transforms(portal):
+def transforms(portal: PloneSite) -> TransformTool:
     return portal.portal_transforms
 
 
 @pytest.fixture
-def setup_tool(portal):
+def setup_tool(portal: PloneSite) -> SetupTool:
     return portal.portal_setup
 
 
@@ -70,7 +74,7 @@ def test_uninstall_profile_is_hidden(portal):
 
 class TestUninstall:
     @pytest.fixture(autouse=True)
-    def uninstalled(self, installer):
+    def uninstalled(self, installer: InstallerView) -> None:
         installer.uninstall_product(PACKAGE_NAME)
 
     def test_addon_uninstalled(self, installer):
