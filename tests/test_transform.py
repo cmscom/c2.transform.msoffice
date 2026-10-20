@@ -28,7 +28,7 @@ class FakeRun:
         self.stdout = stdout
         self.stderr = stderr
         self.error = error
-        self.calls = []
+        self.calls: list[tuple[list[str], dict[str, object]]] = []
 
     def __call__(
         self, args: list[str], **kwargs: object
@@ -47,8 +47,15 @@ def clean_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("C2_TRANSFORM_MSOFFICE_JAVA_OPTS", raising=False)
 
 
-def fake_run(monkeypatch: pytest.MonkeyPatch, **kwargs: object) -> FakeRun:
-    run = FakeRun(**kwargs)
+def fake_run(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    returncode: int = 0,
+    stdout: bytes = b"",
+    stderr: bytes = b"",
+    error: Exception | None = None,
+) -> FakeRun:
+    run = FakeRun(returncode, stdout, stderr, error)
     monkeypatch.setattr(transform.subprocess, "run", run)
     return run
 
@@ -57,7 +64,8 @@ def convert(orig: bytes | str) -> str:
     data = datastream("test")
     result = transform.msoffice_to_text().convert(orig, data)
     assert result is data
-    return data.getData()
+    text: str = data.getData()
+    return text
 
 
 def test_implements_itransform():

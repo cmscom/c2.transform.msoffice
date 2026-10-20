@@ -59,14 +59,16 @@ def add_file(portal: PloneSite, name: str, content_type: str) -> File:
 
 
 def text_of(portal: PloneSite, name: str, content_type: str) -> str:
-    return SearchableText_file(add_file(portal, name, content_type))()
+    text: str = SearchableText_file(add_file(portal, name, content_type))()
+    return text
 
 
 def transformed(portal: PloneSite, name: str, content_type: str) -> str:
     data = portal.portal_transforms.convertTo(
         "text/plain", (SAMPLES / name).read_bytes(), mimetype=content_type
     )
-    return data.getData()
+    text: str = data.getData()
+    return text
 
 
 @pytest.mark.usefixtures("java", "no_locale")
