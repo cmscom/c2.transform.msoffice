@@ -1,0 +1,6 @@
+*settings.xml
+.classpath
+.project
+/bin/
+extjar/
+target/
